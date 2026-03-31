@@ -34,7 +34,7 @@ Plans:
 - [x] 01-01-PLAN.md — Project scaffolding, types, prompt generation, input classifier
 - [x] 01-02-PLAN.md — Shell builtins (cd, export) and history persistence
 - [x] 01-03-PLAN.md — Command passthrough, REPL loop, CLI entry point
-- [ ] 01-04-PLAN.md — Integration tests and human verification
+- [x] 01-04-PLAN.md — Integration tests and human verification
 
 ### Phase 2: AI Integration
 **Goal**: Users can invoke Claude via the `a` command and get streaming AI responses with full tool-use capabilities
