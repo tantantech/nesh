@@ -51,7 +51,7 @@ Plans:
 Plans:
 - [x] 02-01-PLAN.md — Type contracts, config module, classifier update, passthrough stderr capture
 - [x] 02-02-PLAN.md — AI module (SDK wrapper) and streaming renderer
-- [ ] 02-03-PLAN.md — Shell REPL integration and end-to-end verification
+- [x] 02-03-PLAN.md — Shell REPL integration and end-to-end verification
 
 ### Phase 3: Distribution & Platform
 **Goal**: Users can install ClaudeShell via npm and use it reliably on macOS and Linux
