@@ -89,10 +89,12 @@ describe('Shell Integration', { timeout: 15_000 }, () => {
     expect(exitCode).toBe(0)
   })
 
-  // AI placeholder: 'a' command shows placeholder
-  it('a command shows AI placeholder message', async () => {
-    const { stdout } = await runShell('a hello\nexit\n')
-    expect(stdout).toContain('AI commands will be available in a future update')
+  // AI integration: 'a' command invokes AI (shows API key error when unset)
+  it('a command shows API key error when ANTHROPIC_API_KEY is not set', async () => {
+    const { stderr } = await runShell('a hello\nexit\n', {
+      env: { ANTHROPIC_API_KEY: '' },
+    })
+    expect(stderr).toContain('ANTHROPIC_API_KEY')
   })
 
   // SHELL-08: History persistence across sessions

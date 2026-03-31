@@ -5,6 +5,8 @@ import { buildPrompt } from './prompt.js'
 import { classifyInput } from './classify.js'
 import { executeCd, executeExport } from './builtins.js'
 import { executeCommand } from './passthrough.js'
+import { executeAI } from './ai.js'
+import { createRenderer } from './renderer.js'
 import { loadHistory, saveHistory, shouldSaveToHistory, HISTORY_PATH } from './history.js'
 import type { ShellState } from './types.js'
 
@@ -22,7 +24,11 @@ export async function runShell(): Promise<void> {
   let state: ShellState = {
     cdState: { previousDir: undefined },
     running: true,
+    lastError: undefined,
+    aiStreaming: false,
   }
+
+  let currentAbortController: AbortController | undefined
   let lastHistoryLine: string | undefined
 
   const cleanup = () => {
@@ -42,9 +48,12 @@ export async function runShell(): Promise<void> {
   })
 
   rl.on('SIGINT', () => {
-    // Clear current line, show fresh prompt
-    // readline handles this when using question() -- SIGINT makes question() reject
-    // We just need to make sure we don't exit
+    if (state.aiStreaming && currentAbortController) {
+      currentAbortController.abort()
+      process.stderr.write('\n[cancelled]\n')
+      state = { ...state, aiStreaming: false }
+    }
+    // When not streaming, readline handles SIGINT normally (clears line)
   })
 
   rl.on('close', () => {
@@ -86,16 +95,50 @@ export async function runShell(): Promise<void> {
           break
 
         case 'passthrough': {
-          const exitCode = await executeCommand(action.command)
-          if (exitCode !== 0) {
-            process.stderr.write(`[exit: ${exitCode}]\n`)
+          const result = await executeCommand(action.command)
+          if (result.exitCode !== 0) {
+            process.stderr.write(`[exit: ${result.exitCode}]\n`)
+            process.stderr.write(`Command failed. Type 'a explain' to ask AI about the error.\n`)
+            state = {
+              ...state,
+              lastError: {
+                command: action.command,
+                stderr: result.stderr,
+                exitCode: result.exitCode,
+              },
+            }
+          } else {
+            state = { ...state, lastError: undefined }
           }
           break
         }
 
-        case 'ai_placeholder':
-          process.stdout.write('AI commands will be available in a future update.\n')
+        case 'ai': {
+          const abortController = new AbortController()
+          currentAbortController = abortController
+          state = { ...state, aiStreaming: true }
+
+          const renderer = createRenderer({ isTTY: process.stdout.isTTY ?? false })
+
+          await executeAI(action.prompt, {
+            cwd: process.cwd(),
+            lastError: state.lastError,
+            abortController,
+            callbacks: {
+              onText: renderer.onText,
+              onToolStart: renderer.onToolStart,
+              onToolEnd: renderer.onToolEnd,
+              onError: (msg) => {
+                process.stderr.write(msg + '\n')
+              },
+            },
+          })
+
+          renderer.finish()
+          state = { ...state, aiStreaming: false }
+          currentAbortController = undefined
           break
+        }
       }
 
       // History management
