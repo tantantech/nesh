@@ -6,11 +6,15 @@
   "bin": {
     "claudeshell": "dist/cli.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "tsx src/cli.ts",
-    "build": "tsdown src/cli.ts --format esm",
+    "build": "tsdown src/cli.ts --format esm --out-dir dist && mv dist/cli.mjs dist/cli.js",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build && npm run test"
   },
   "engines": {
     "node": ">=22.0.0"
