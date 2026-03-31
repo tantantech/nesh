@@ -97,6 +97,49 @@ describe('Shell Integration', { timeout: 15_000 }, () => {
     expect(stderr).toContain('ANTHROPIC_API_KEY')
   })
 
+  // PLAT-01: Built artifact --version works
+  it('built artifact outputs version string', async () => {
+    const { stdout, exitCode } = await new Promise<{ stdout: string; stderr: string; exitCode: number }>((resolve) => {
+      const child = spawn('node', ['dist/cli.js', '--version'], {
+        cwd: process.cwd(),
+        env: { ...process.env },
+        stdio: ['pipe', 'pipe', 'pipe'],
+      })
+      let stdout = ''
+      let stderr = ''
+      child.stdout.on('data', (d: Buffer) => { stdout += d.toString() })
+      child.stderr.on('data', (d: Buffer) => { stderr += d.toString() })
+      child.on('close', (code: number | null) => {
+        resolve({ stdout, stderr, exitCode: code ?? 1 })
+      })
+    })
+    expect(exitCode).toBe(0)
+    expect(stdout).toMatch(/claudeshell v\d+\.\d+\.\d+/)
+  })
+
+  // PLAT-01: Built artifact starts and exits cleanly
+  it('built artifact starts and responds to exit command', async () => {
+    const { exitCode } = await new Promise<{ stdout: string; stderr: string; exitCode: number }>((resolve) => {
+      const child = spawn('node', ['dist/cli.js'], {
+        cwd: process.cwd(),
+        env: { ...process.env, TERM: 'dumb' },
+        stdio: ['pipe', 'pipe', 'pipe'],
+      })
+      let stdout = ''
+      let stderr = ''
+      child.stdout.on('data', (d: Buffer) => { stdout += d.toString() })
+      child.stderr.on('data', (d: Buffer) => { stderr += d.toString() })
+      const timeout = setTimeout(() => { child.kill('SIGKILL') }, 5000)
+      child.stdin.write('exit\n')
+      child.stdin.end()
+      child.on('close', (code: number | null) => {
+        clearTimeout(timeout)
+        resolve({ stdout, stderr, exitCode: code ?? 1 })
+      })
+    })
+    expect(exitCode).toBe(0)
+  })
+
   // SHELL-08: History persistence across sessions
   it('saves history file after session', async () => {
     const tmpHistory = path.join(
