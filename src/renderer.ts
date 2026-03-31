@@ -1,4 +1,6 @@
 import pc from 'picocolors'
+import { Marked } from 'marked'
+import { markedTerminal } from 'marked-terminal'
 
 export interface Renderer {
   readonly onText: (text: string) => void
@@ -9,9 +11,14 @@ export interface Renderer {
 
 export function createRenderer(options: { readonly isTTY: boolean }): Renderer {
   const { isTTY } = options
+  let buffer = ''
 
   const onText = (text: string): void => {
-    process.stdout.write(text)
+    if (isTTY) {
+      buffer += text
+    } else {
+      process.stdout.write(text)
+    }
   }
 
   const onToolStart = (toolName: string): void => {
@@ -28,7 +35,15 @@ export function createRenderer(options: { readonly isTTY: boolean }): Renderer {
   }
 
   const finish = (): void => {
-    process.stdout.write('\n')
+    if (isTTY && buffer.length > 0) {
+      const marked = new Marked()
+      marked.use(markedTerminal())
+      const rendered = marked.parse(buffer) as string
+      process.stdout.write(rendered)
+      buffer = ''
+    } else {
+      process.stdout.write('\n')
+    }
   }
 
   return { onText, onToolStart, onToolEnd, finish }

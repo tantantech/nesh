@@ -15,10 +15,10 @@ describe('createRenderer', () => {
   })
 
   describe('TTY mode', () => {
-    it('onText writes text to stdout immediately', () => {
+    it('onText buffers text in TTY mode (rendered on finish)', () => {
       const renderer = createRenderer({ isTTY: true })
       renderer.onText('hello')
-      expect(stdoutSpy).toHaveBeenCalledWith('hello')
+      expect(stdoutSpy).not.toHaveBeenCalled()
     })
 
     it('onToolStart writes dim tool indicator to stderr', () => {
@@ -48,12 +48,13 @@ describe('createRenderer', () => {
       expect(allWrites).toContain('exit code 0')
     })
 
-    it('finish writes trailing newline', () => {
+    it('finish renders buffered markdown to stdout', () => {
       const renderer = createRenderer({ isTTY: true })
-      renderer.onText('some output')
-      stdoutSpy.mockClear()
+      renderer.onText('**bold** text')
       renderer.finish()
-      expect(stdoutSpy).toHaveBeenCalledWith('\n')
+      const allWrites = stdoutSpy.mock.calls.map(c => c[0] as string).join('')
+      expect(allWrites).toContain('bold')
+      expect(allWrites).not.toContain('**')
     })
   })
 
