@@ -61,7 +61,11 @@ Plans:
   1. User can run `npm install -g claudeshell` and the `claudeshell` command is available system-wide
   2. User can configure shell behavior via a `~/.claudeshell/config` file
   3. All Phase 1 and Phase 2 functionality works identically on both macOS and Linux
-**Plans**: TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Config file support and npm distribution packaging
+- [ ] 03-02-PLAN.md — Cross-platform validation and CI test script
 
 ## Progress
 
@@ -72,4 +76,4 @@ Phases execute in numeric order: 1 -> 2 -> 3
 |-------|----------------|--------|-----------|
 | 1. Shell Foundation | 4/4 | Complete | - |
 | 2. AI Integration | 0/3 | Planning complete | - |
-| 3. Distribution & Platform | 0/? | Not started | - |
+| 3. Distribution & Platform | 0/2 | Planning complete | - |
