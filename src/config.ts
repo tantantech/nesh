@@ -6,6 +6,7 @@ export interface ClaudeShellConfig {
   readonly api_key?: string
   readonly model?: string
   readonly history_size?: number
+  readonly prompt_template?: string
 }
 
 export const CONFIG_DIR = path.join(os.homedir(), '.claudeshell')
@@ -28,6 +29,7 @@ export function loadConfig(): ClaudeShellConfig {
       ...(typeof obj.api_key === 'string' ? { api_key: obj.api_key } : {}),
       ...(typeof obj.model === 'string' ? { model: obj.model } : {}),
       ...(typeof obj.history_size === 'number' ? { history_size: obj.history_size } : {}),
+      ...(typeof obj.prompt_template === 'string' ? { prompt_template: obj.prompt_template } : {}),
     }
 
     return config
@@ -51,4 +53,9 @@ export function resolveApiKey(config?: ClaudeShellConfig): string | undefined {
 
 export function ensureConfigDir(): void {
   fs.mkdirSync(CONFIG_DIR, { recursive: true })
+}
+
+export function saveConfig(config: ClaudeShellConfig): void {
+  ensureConfigDir()
+  fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2) + '\n', 'utf-8')
 }

@@ -3,16 +3,18 @@ import * as os from 'node:os'
 import process from 'node:process'
 import { buildPrompt } from './prompt.js'
 import { classifyInput } from './classify.js'
-import { executeCd, executeExport } from './builtins.js'
+import { executeCd, executeExport, executeTheme } from './builtins.js'
 import { executeCommand } from './passthrough.js'
 import { executeAI } from './ai.js'
 import { createRenderer } from './renderer.js'
 import { loadHistory, saveHistory, shouldSaveToHistory, HISTORY_PATH } from './history.js'
-import { loadConfig } from './config.js'
+import { loadConfig, saveConfig } from './config.js'
+import { getTemplateByName, buildPromptFromTemplate, DEFAULT_TEMPLATE_NAME } from './templates.js'
 import type { ShellState } from './types.js'
 
 export async function runShell(): Promise<void> {
   const config = loadConfig()
+  let currentTemplate = config.prompt_template ?? DEFAULT_TEMPLATE_NAME
   const historyLines = loadHistory(HISTORY_PATH)
 
   const rl = readline.createInterface({
@@ -64,7 +66,8 @@ export async function runShell(): Promise<void> {
 
   while (state.running) {
     try {
-      const prompt = buildPrompt(process.cwd(), os.homedir())
+      const template = getTemplateByName(currentTemplate) ?? getTemplateByName(DEFAULT_TEMPLATE_NAME)!
+      const prompt = buildPromptFromTemplate(template, process.cwd(), os.homedir())
       const line = await rl.question(prompt)
       const action = classifyInput(line)
 
@@ -89,6 +92,15 @@ export async function runShell(): Promise<void> {
             case 'clear':
               process.stdout.write('\x1Bc')
               break
+            case 'theme': {
+              const selected = await executeTheme(rl)
+              if (selected) {
+                currentTemplate = selected
+                saveConfig({ ...config, prompt_template: selected })
+                process.stdout.write(`Theme set to: ${selected}\n`)
+              }
+              break
+            }
             case 'exit':
             case 'quit':
               state = { ...state, running: false }

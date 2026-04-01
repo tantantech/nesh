@@ -1,6 +1,6 @@
 import type { InputAction, BuiltinName } from './types.js'
 
-const BUILTINS: ReadonlySet<string> = new Set(['cd', 'exit', 'quit', 'clear', 'export'])
+const BUILTINS: ReadonlySet<string> = new Set(['cd', 'exit', 'quit', 'clear', 'export', 'theme'])
 
 export function classifyInput(line: string): InputAction {
   const trimmed = line.trim()

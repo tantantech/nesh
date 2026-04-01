@@ -1,6 +1,9 @@
 import * as path from 'node:path'
 import * as os from 'node:os'
+import * as readline from 'node:readline/promises'
 import type { CdState } from './types.js'
+import { TEMPLATES, buildPromptFromTemplate } from './templates.js'
+import { abbreviatePath, getGitBranch } from './prompt.js'
 
 export function expandTilde(p: string): string {
   if (p === '~') return os.homedir()
@@ -49,4 +52,29 @@ export function executeExport(args: string): string | undefined {
   const value = args.slice(eqIndex + 1)
   process.env[key] = value
   return undefined
+}
+
+export async function executeTheme(rl: readline.Interface): Promise<string | undefined> {
+  const cwd = process.cwd()
+  const homedir = os.homedir()
+
+  process.stdout.write('\nAvailable themes:\n\n')
+
+  for (let i = 0; i < TEMPLATES.length; i++) {
+    const t = TEMPLATES[i]
+    const nerdNote = t.requiresNerdFont ? ' (requires Nerd Font)' : ''
+    const preview = buildPromptFromTemplate(t, cwd, homedir)
+    process.stdout.write(`  [${i + 1}] ${t.label} \u2014 ${t.description}${nerdNote}\n`)
+    process.stdout.write(`      Preview: ${preview}\n\n`)
+  }
+
+  const answer = await rl.question(`Select theme (1-${TEMPLATES.length}): `)
+  const num = parseInt(answer.trim(), 10)
+
+  if (isNaN(num) || num < 1 || num > TEMPLATES.length) {
+    process.stdout.write('Selection cancelled.\n')
+    return undefined
+  }
+
+  return TEMPLATES[num - 1].name
 }
