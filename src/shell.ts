@@ -12,6 +12,7 @@ import { createSessionId } from './session.js'
 import { EMPTY_ACCUMULATOR, accumulate } from './cost.js'
 import { runChatMode } from './chat.js'
 import { loadHistory, saveHistory, shouldSaveToHistory, HISTORY_PATH } from './history.js'
+import { isInteractiveCommand, executeInteractive } from './interactive.js'
 import { loadConfig, loadProjectConfig, mergeConfigs, saveConfig, resolveApiKey } from './config.js'
 import { detectProject } from './context.js'
 import type { NeshConfig } from './config.js'
@@ -80,6 +81,9 @@ export async function runShell(): Promise<void> {
   })
 
   rl.on('SIGINT', () => {
+    if (state.interactiveRunning) {
+      return  // Let child process handle Ctrl+C
+    }
     if (state.aiStreaming && currentAbortController) {
       currentAbortController.abort()
       process.stderr.write('\n[cancelled]\n')
@@ -148,6 +152,30 @@ export async function runShell(): Promise<void> {
           break
 
         case 'passthrough': {
+          const interactiveList = config.interactive_commands ?? []
+          if (isInteractiveCommand(action.command, interactiveList)) {
+            // Per D-05, D-12: Pause readline to release stdin ownership
+            rl.pause()
+            state = { ...state, interactiveRunning: true }
+
+            const interactiveResult = await executeInteractive(action.command)
+
+            // Per D-16: Reset ANSI attributes
+            process.stdout.write('\x1b[0m')
+            // Per D-17: Ensure fresh line
+            process.stdout.write('\n')
+            // Per D-06, D-13: Resume readline
+            state = { ...state, interactiveRunning: false }
+            rl.resume()
+
+            if (interactiveResult.exitCode !== 0) {
+              process.stderr.write(`[exit: ${interactiveResult.exitCode}]\n`)
+              state = { ...state, lastError: { command: action.command, stderr: '', exitCode: interactiveResult.exitCode }, lastSuggestedFix: undefined }
+            } else {
+              state = { ...state, lastError: undefined, lastSuggestedFix: undefined }
+            }
+            break
+          }
           const result = await executeCommand(action.command)
           if (result.exitCode !== 0) {
             process.stderr.write(`[exit: ${result.exitCode}]\n`)
