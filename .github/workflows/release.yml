@@ -1,0 +1,101 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test Gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+
+  build-binaries:
+    name: Build ${{ matrix.platform }}-${{ matrix.arch }}
+    needs: test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: macos-latest
+            platform: macos
+            arch: arm64
+          - os: macos-13
+            platform: macos
+            arch: x64
+          - os: ubuntu-latest
+            platform: linux
+            arch: x64
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: npm ci
+
+      - name: Build standalone binary
+        run: bash scripts/build-binaries.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: claudeshell-${{ matrix.platform }}-${{ matrix.arch }}
+          path: claudeshell-${{ matrix.platform }}-${{ matrix.arch }}
+          if-no-files-found: error
+
+  upload-release-assets:
+    name: Upload Release Assets
+    needs: build-binaries
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: claudeshell-*
+
+      - name: Upload binaries to release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          for dir in claudeshell-*/; do
+            for binary in "${dir}"claudeshell-*; do
+              echo "Uploading ${binary}..."
+              gh release upload "${RELEASE_TAG}" "${binary}" --clobber --repo "${GH_REPO}"
+            done
+          done
+
+  npm-publish:
+    name: Publish to npm
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+
+      - run: npm ci
+      - run: npm run build
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
