@@ -108,7 +108,7 @@ Plans:
 Plans:
 - [x] 05-01-PLAN.md — Pipe mode: stdin detection, pipe.ts module, cli.ts wiring
 - [x] 05-02-PLAN.md — Error recovery: auto-fix suggestions and `a fix` command
-- [ ] 05-03-PLAN.md — Configurable AI command prefix
+- [x] 05-03-PLAN.md — Configurable AI command prefix
 
 ### Phase 6: Context & Permissions
 **Goal**: Users can trust ClaudeShell to understand their project and respect their boundaries on what AI can modify

@@ -48,7 +48,7 @@
 
 ### Configuration
 
-- [ ] **CFG-01**: User can configure a custom AI command prefix (not just `a`) via config
+- [x] **CFG-01**: User can configure a custom AI command prefix (not just `a`) via config
 - [ ] **CFG-02**: Per-project `.claudeshell.json` overrides global config when present
 
 ## v1.0 Validated
@@ -108,7 +108,7 @@
 | VIS-02 | Phase 4 | Complete |
 | PTY-01 | Phase 7 | Pending |
 | PTY-02 | Phase 7 | Pending |
-| CFG-01 | Phase 5 | Pending |
+| CFG-01 | Phase 5 | Complete |
 | CFG-02 | Phase 6 | Pending |
 
 **Coverage:**
