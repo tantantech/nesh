@@ -22,7 +22,7 @@ export default function Home() {
         <Hero />
 
         {/* Terminal demo section */}
-        <section id="demo" className="relative z-10 -mt-8 pb-16 px-4 sm:px-6">
+        <section id="demo" className="relative z-10 pb-16 px-4 sm:px-6">
           <TerminalDemo />
         </section>
 

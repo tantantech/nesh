@@ -9,11 +9,11 @@ interface TerminalLine {
 }
 
 const DEMO_LINES: TerminalLine[] = [
-  { type: "prompt", text: "  claudeshell   ~/Projects   main  ", delay: 0 },
+  { type: "prompt", text: "claudeshell", delay: 0 },
   { type: "command", text: "ls", delay: 600 },
   { type: "output", text: "README.md  package.json  src/  tests/", delay: 300 },
-  { type: "blank", text: "", delay: 200 },
-  { type: "prompt", text: "  claudeshell   ~/Projects   main  ", delay: 100 },
+  { type: "blank", text: "", delay: 300 },
+  { type: "prompt", text: "claudeshell", delay: 100 },
   { type: "command", text: "a find all typescript files larger than 100 lines", delay: 1200 },
   { type: "tool", text: "  \u2192 Reading src/...", delay: 400 },
   { type: "tool", text: "  \u2192 Running wc -l src/*.ts...", delay: 600 },
@@ -22,14 +22,14 @@ const DEMO_LINES: TerminalLine[] = [
   { type: "ai", text: "  src/shell.ts    163 lines", delay: 150 },
   { type: "ai", text: "  src/ai.ts       179 lines", delay: 150 },
   { type: "ai", text: "  src/config.ts   106 lines", delay: 150 },
-  { type: "blank", text: "", delay: 400 },
-  { type: "prompt", text: "  claudeshell   ~/Projects   main  ", delay: 100 },
+  { type: "blank", text: "", delay: 600 },
+  { type: "prompt", text: "claudeshell", delay: 100 },
   { type: "command", text: "a explain the last error", delay: 1000 },
   { type: "tool", text: "  \u2192 Analyzing error context...", delay: 500 },
   { type: "blank", text: "", delay: 200 },
   { type: "ai", text: "The TypeScript compiler found a type mismatch in", delay: 200 },
-  { type: "ai", text: "src/handler.ts:42. You're passing a `string` where", delay: 150 },
-  { type: "ai", text: "the function expects `RequestConfig`. Fix:", delay: 150 },
+  { type: "ai", text: "src/handler.ts:42 \u2014 passing `string` where it", delay: 150 },
+  { type: "ai", text: "expects `RequestConfig`. Quick fix:", delay: 150 },
   { type: "ai", text: "  const config: RequestConfig = { url: endpoint };", delay: 200 },
 ];
 
@@ -42,7 +42,6 @@ export function TerminalDemo() {
 
   useEffect(() => {
     if (visibleLines >= DEMO_LINES.length) {
-      // Restart after a pause
       const timeout = setTimeout(() => {
         setVisibleLines(0);
         setTypingIndex(0);
@@ -55,7 +54,6 @@ export function TerminalDemo() {
     const line = DEMO_LINES[visibleLines];
 
     if (line.type === "command" && !isTyping) {
-      // Type out commands character by character
       setIsTyping(true);
       setCurrentTyped("");
       setTypingIndex(0);
@@ -71,7 +69,6 @@ export function TerminalDemo() {
         }, 25 + Math.random() * 45);
         return () => clearTimeout(timeout);
       }
-      // Done typing
       setIsTyping(false);
       const timeout = setTimeout(() => {
         setVisibleLines((v) => v + 1);
@@ -97,13 +94,13 @@ export function TerminalDemo() {
       case "prompt":
         return "text-muted-foreground";
       case "command":
-        return "text-foreground font-semibold";
+        return "text-foreground font-medium";
       case "output":
-        return "text-muted-foreground";
+        return "text-muted-foreground/80";
       case "tool":
-        return "text-primary/60 italic text-sm";
+        return "text-primary/50 text-[13px]";
       case "ai":
-        return "text-primary";
+        return "text-primary/90";
       case "blank":
         return "";
       default:
@@ -111,70 +108,73 @@ export function TerminalDemo() {
     }
   };
 
-  const renderPrompt = (text: string) => (
-    <span className="flex items-center gap-0">
-      <span className="bg-primary text-primary-foreground px-2 py-0.5 text-xs font-bold rounded-l-md">
-        {text.split("   ")[0]?.trim()}
+  const renderPrompt = () => (
+    <span className="flex items-center gap-0 shrink-0">
+      <span className="bg-primary/90 text-primary-foreground px-2 py-0.5 text-[11px] font-bold rounded-l">
+        claudeshell
       </span>
-      <span className="bg-foreground/10 dark:bg-white/10 text-foreground/70 px-2 py-0.5 text-xs rounded-r-md">
+      <span className="bg-foreground/8 dark:bg-white/8 text-foreground/60 px-1.5 py-0.5 text-[11px]">
         ~/Projects
       </span>
-      <span className="text-muted-foreground/60 mx-1 text-xs">main</span>
-      <span className="text-primary ml-1">&gt;</span>
+      <span className="bg-foreground/5 dark:bg-white/5 text-foreground/40 px-1.5 py-0.5 text-[11px] rounded-r">
+        main
+      </span>
+      <span className="text-primary/70 ml-2 text-xs">&gt;</span>
     </span>
   );
 
   return (
-    <div className="relative w-full max-w-2xl mx-auto">
-      <div className="relative rounded-2xl border border-border bg-card glass terminal-glow scanlines overflow-hidden">
+    <div className="relative w-full max-w-[640px] mx-auto">
+      <div className="relative rounded-xl border border-white/[0.06] bg-[#0c1210] dark:bg-[#050a08] overflow-hidden shadow-2xl shadow-black/30 dark:shadow-black/50">
         {/* Title bar */}
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-border/50">
+        <div className="flex items-center gap-2 px-4 py-2.5 border-b border-white/[0.04] bg-white/[0.02]">
           <div className="flex gap-1.5">
-            <div className="h-3 w-3 rounded-full bg-red-500/80" />
-            <div className="h-3 w-3 rounded-full bg-yellow-500/80" />
-            <div className="h-3 w-3 rounded-full bg-green-500/80" />
+            <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
+            <div className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
+            <div className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
           </div>
-          <span className="flex-1 text-center text-xs text-muted-foreground font-mono">
-            claudeshell &mdash; zsh
+          <span className="flex-1 text-center text-[11px] text-white/30 font-mono">
+            claudeshell
           </span>
+          <div className="w-[52px]" /> {/* Balance the dots */}
         </div>
 
         {/* Terminal body */}
         <div
           ref={containerRef}
-          className="p-4 font-mono text-sm leading-relaxed h-[320px] overflow-hidden"
+          className="p-4 font-mono text-[13px] leading-[1.7] min-h-[180px] overflow-hidden"
+          style={{ color: "#e8f5ee" }}
         >
           {DEMO_LINES.slice(0, visibleLines).map((line, i) => (
-            <div key={i} className={`${getLineClasses(line)} min-h-[1.375rem]`}>
+            <div key={i} className={`${getLineClasses(line)} min-h-[1.5rem]`}>
               {line.type === "prompt" ? (
                 <span className="flex items-center gap-2">
-                  {renderPrompt(line.text)}
-                  {/* Show typed text for the command that follows */}
+                  {renderPrompt()}
                   {i === visibleLines - 1 && isTyping && (
-                    <span className="text-foreground font-semibold">
+                    <span className="text-white/90 font-medium">
                       {currentTyped}
-                      <span className="cursor-blink text-primary">|</span>
+                      <span className="cursor-blink text-primary/80">&#9608;</span>
                     </span>
                   )}
                 </span>
               ) : (
-                line.text
+                <span>{line.text}</span>
               )}
             </div>
           ))}
           {visibleLines < DEMO_LINES.length &&
             DEMO_LINES[visibleLines]?.type === "prompt" &&
             !isTyping && (
-              <div className="min-h-[1.375rem] flex items-center gap-2">
-                {renderPrompt(DEMO_LINES[visibleLines].text)}
-                <span className="cursor-blink text-primary">|</span>
+              <div className="min-h-[1.5rem] flex items-center gap-2">
+                {renderPrompt()}
+                <span className="cursor-blink text-primary/80">&#9608;</span>
               </div>
             )}
         </div>
       </div>
 
-      {/* Reflection glow under the terminal */}
-      <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-3/4 h-8 bg-primary/10 dark:bg-primary/5 blur-2xl rounded-full" />
+      {/* Subtle reflection */}
+      <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-2/3 h-10 bg-primary/6 blur-3xl rounded-full" />
     </div>
   );
 }
