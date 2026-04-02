@@ -1,59 +1,194 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, type ReactNode } from "react";
 
 interface TerminalLine {
-  type: "prompt" | "command" | "output" | "tool" | "ai" | "blank";
-  text: string;
+  type: "prompt" | "command" | "output" | "tool" | "ai" | "ai-code" | "blank";
+  content: ReactNode;
   delay: number;
 }
 
+// Styled fragments for realistic output
+const dir = (name: string) => (
+  <span className="text-[#5fd7ff] font-semibold">{name}</span>
+);
+const file = (name: string) => <span className="text-[#c0c5ce]">{name}</span>;
+const dim = (text: string) => <span className="text-white/25">{text}</span>;
+
 const DEMO_LINES: TerminalLine[] = [
-  { type: "prompt", text: "claudeshell", delay: 0 },
-  { type: "command", text: "ls", delay: 600 },
-  { type: "output", text: "README.md  package.json  src/  tests/", delay: 300 },
-  { type: "blank", text: "", delay: 300 },
-  { type: "prompt", text: "claudeshell", delay: 100 },
-  { type: "command", text: "a find typescript files over 100 lines", delay: 1200 },
-  { type: "tool", text: "  \u2192 Reading src/...", delay: 400 },
-  { type: "tool", text: "  \u2192 Running wc -l src/*.ts...", delay: 600 },
-  { type: "blank", text: "", delay: 200 },
-  { type: "ai", text: "Found 3 TypeScript files over 100 lines:", delay: 300 },
-  { type: "ai", text: "  src/shell.ts    163 lines", delay: 150 },
-  { type: "ai", text: "  src/ai.ts       179 lines", delay: 150 },
-  { type: "ai", text: "  src/config.ts   106 lines", delay: 150 },
-  { type: "blank", text: "", delay: 600 },
-  { type: "prompt", text: "claudeshell", delay: 100 },
-  { type: "command", text: "a explain the last error", delay: 1000 },
-  { type: "tool", text: "  \u2192 Analyzing error context...", delay: 500 },
-  { type: "blank", text: "", delay: 200 },
-  { type: "ai", text: "The TypeScript compiler found a type mismatch in", delay: 200 },
-  { type: "ai", text: "src/handler.ts:42 \u2014 passing `string` where it", delay: 150 },
-  { type: "ai", text: "expects `RequestConfig`. Quick fix:", delay: 150 },
-  { type: "ai", text: "  const config: RequestConfig = { url: endpoint };", delay: 200 },
+  { type: "prompt", content: null, delay: 0 },
+  { type: "command", content: "ls -la", delay: 500 },
+  {
+    type: "output",
+    content: (
+      <>
+        {dim("drwxr-xr-x  12 user staff  384 Mar 28 09:41")} {dir(".")}
+        {"\n"}
+        {dim("-rw-r--r--   1 user staff 1.2K Mar 28 09:41")} {file("README.md")}
+        {"\n"}
+        {dim("-rw-r--r--   1 user staff  892 Mar 28 09:40")} {file("package.json")}
+        {"\n"}
+        {dim("drwxr-xr-x   8 user staff  256 Mar 28 09:41")} {dir("src/")}
+        {"\n"}
+        {dim("drwxr-xr-x   4 user staff  128 Mar 28 09:30")} {dir("tests/")}
+      </>
+    ),
+    delay: 200,
+  },
+  { type: "blank", content: null, delay: 400 },
+  { type: "prompt", content: null, delay: 100 },
+  {
+    type: "command",
+    content: "a find typescript files over 100 lines",
+    delay: 1200,
+  },
+  {
+    type: "tool",
+    content: (
+      <span className="text-white/20">
+        {"  "}
+        <span className="text-[#5fd7ff]/40">{"▸"}</span> Reading src/...
+      </span>
+    ),
+    delay: 400,
+  },
+  {
+    type: "tool",
+    content: (
+      <span className="text-white/20">
+        {"  "}
+        <span className="text-[#5fd7ff]/40">{"▸"}</span> Running{" "}
+        <span className="text-white/30">wc -l src/*.ts</span>
+      </span>
+    ),
+    delay: 600,
+  },
+  { type: "blank", content: null, delay: 200 },
+  {
+    type: "ai",
+    content: (
+      <span className="text-[#a8e6cf]">
+        Found <span className="text-white font-semibold">3</span> TypeScript
+        files over 100 lines:
+      </span>
+    ),
+    delay: 300,
+  },
+  {
+    type: "ai-code",
+    content: (
+      <span className="text-[#a8e6cf]/80">
+        {"  "}
+        <span className="text-[#ffd580]">src/shell.ts</span>
+        {"    "}
+        <span className="text-white/60">163 lines</span>
+        {"\n  "}
+        <span className="text-[#ffd580]">src/ai.ts</span>
+        {"       "}
+        <span className="text-white/60">179 lines</span>
+        {"\n  "}
+        <span className="text-[#ffd580]">src/config.ts</span>
+        {"   "}
+        <span className="text-white/60">106 lines</span>
+      </span>
+    ),
+    delay: 200,
+  },
+  { type: "blank", content: null, delay: 500 },
+  { type: "prompt", content: null, delay: 100 },
+  { type: "command", content: "a explain the last error", delay: 1000 },
+  {
+    type: "tool",
+    content: (
+      <span className="text-white/20">
+        {"  "}
+        <span className="text-[#5fd7ff]/40">{"▸"}</span> Analyzing error
+        context...
+      </span>
+    ),
+    delay: 500,
+  },
+  { type: "blank", content: null, delay: 200 },
+  {
+    type: "ai",
+    content: (
+      <span className="text-[#a8e6cf]">
+        The TypeScript compiler found a{" "}
+        <span className="text-[#ff6b6b] font-semibold">type mismatch</span> in{" "}
+        <span className="text-[#ffd580]">src/handler.ts:42</span>
+      </span>
+    ),
+    delay: 200,
+  },
+  {
+    type: "ai",
+    content: (
+      <span className="text-[#a8e6cf]/80">
+        You&apos;re passing a{" "}
+        <span className="text-[#ff6b6b] bg-[#ff6b6b]/10 px-1 rounded">
+          string
+        </span>{" "}
+        where the function expects{" "}
+        <span className="text-[#5fd7ff] bg-[#5fd7ff]/10 px-1 rounded">
+          RequestConfig
+        </span>
+      </span>
+    ),
+    delay: 150,
+  },
+  { type: "blank", content: null, delay: 100 },
+  {
+    type: "ai",
+    content: <span className="text-[#a8e6cf]/60">Quick fix:</span>,
+    delay: 100,
+  },
+  {
+    type: "ai-code",
+    content: (
+      <span>
+        {"  "}
+        <span className="text-[#c792ea]">const</span>{" "}
+        <span className="text-[#82aaff]">config</span>
+        <span className="text-white/40">:</span>{" "}
+        <span className="text-[#5fd7ff]">RequestConfig</span>{" "}
+        <span className="text-white/40">=</span>{" "}
+        <span className="text-white/40">{"{"}</span>{" "}
+        <span className="text-[#a8e6cf]">url</span>
+        <span className="text-white/40">:</span>{" "}
+        <span className="text-[#82aaff]">endpoint</span>{" "}
+        <span className="text-white/40">{"}"}</span>
+        <span className="text-white/40">;</span>
+      </span>
+    ),
+    delay: 200,
+  },
 ];
 
-// State machine phases
 type Phase =
   | { kind: "waiting"; lineIndex: number }
   | { kind: "typing"; lineIndex: number; charIndex: number }
-  | { kind: "advancing"; lineIndex: number }
   | { kind: "done" };
 
-const Cursor = () => <span className="cursor-blink text-primary" />;
+const Cursor = () => <span className="cursor-blink text-[#00ff41]" />;
 
-const Prompt = () => (
-  <span className="flex items-center gap-0 shrink-0">
-    <span className="bg-primary/90 text-primary-foreground px-2 py-0.5 text-[11px] font-bold rounded-l">
+const PromptSegment = () => (
+  <span className="flex items-center gap-0 shrink-0 select-none">
+    {/* Powerline: green segment */}
+    <span className="bg-[#00ff41]/90 text-[#050a08] px-2.5 py-[1px] text-[12px] font-bold">
       claudeshell
     </span>
-    <span className="bg-foreground/8 dark:bg-white/8 text-foreground/60 px-1.5 py-0.5 text-[11px]">
+    <span className="text-[#00ff41]/90 mr-[-1px]">{"\uE0B0"}</span>
+    {/* Blue segment */}
+    <span className="bg-[#3a4a5a] text-[#8fa4b8] px-2 py-[1px] text-[12px]">
       ~/Projects
     </span>
-    <span className="bg-foreground/5 dark:bg-white/5 text-foreground/40 px-1.5 py-0.5 text-[11px] rounded-r">
-      main
+    <span className="text-[#3a4a5a]">{"\uE0B0"}</span>
+    {/* Git branch */}
+    <span className="text-[#5fd7ff]/50 text-[12px] ml-1.5">
+      {"\uE0A0"} main
     </span>
-    <span className="text-primary/70 ml-2 text-xs">&gt;</span>
+    {/* Prompt char */}
+    <span className="text-[#00ff41]/70 ml-2 text-[13px]">❯</span>
   </span>
 );
 
@@ -72,7 +207,6 @@ export function TerminalDemo() {
     }
   }, []);
 
-  // Main state machine
   useEffect(() => {
     clearTimer();
 
@@ -80,7 +214,7 @@ export function TerminalDemo() {
       timerRef.current = setTimeout(() => {
         setRenderedLines([]);
         setPhase({ kind: "waiting", lineIndex: 0 });
-      }, 4000);
+      }, 5000);
       return clearTimer;
     }
 
@@ -93,17 +227,11 @@ export function TerminalDemo() {
       const line = DEMO_LINES[lineIndex];
       timerRef.current = setTimeout(() => {
         if (line.type === "command") {
-          // Add the prompt line first, then start typing
-          setRenderedLines((prev) => [
-            ...prev,
-            { line: DEMO_LINES[lineIndex - 1] ?? line, typed: "" },
-          ]);
+          setRenderedLines((prev) => [...prev, { line, typed: "" }]);
           setPhase({ kind: "typing", lineIndex, charIndex: 0 });
         } else if (line.type === "prompt") {
-          // Don't render prompt yet — it gets rendered when the command starts typing
           setPhase({ kind: "waiting", lineIndex: lineIndex + 1 });
         } else {
-          // Render non-prompt, non-command lines immediately
           setRenderedLines((prev) => [...prev, { line }]);
           setPhase({ kind: "waiting", lineIndex: lineIndex + 1 });
         }
@@ -113,22 +241,26 @@ export function TerminalDemo() {
 
     if (phase.kind === "typing") {
       const { lineIndex, charIndex } = phase;
-      const cmd = DEMO_LINES[lineIndex].text;
+      const cmd =
+        typeof DEMO_LINES[lineIndex].content === "string"
+          ? (DEMO_LINES[lineIndex].content as string)
+          : "";
 
       if (charIndex < cmd.length) {
         timerRef.current = setTimeout(() => {
           setRenderedLines((prev) => {
             const next = [...prev];
-            const last = next[next.length - 1];
-            next[next.length - 1] = { ...last, typed: cmd.slice(0, charIndex + 1) };
+            next[next.length - 1] = {
+              ...next[next.length - 1],
+              typed: cmd.slice(0, charIndex + 1),
+            };
             return next;
           });
           setPhase({ kind: "typing", lineIndex, charIndex: charIndex + 1 });
-        }, 30 + Math.random() * 40);
+        }, 28 + Math.random() * 42);
         return clearTimer;
       }
 
-      // Typing done — finalize the line and advance
       timerRef.current = setTimeout(() => {
         setRenderedLines((prev) => {
           const next = [...prev];
@@ -146,59 +278,59 @@ export function TerminalDemo() {
     return clearTimer;
   }, [phase, clearTimer]);
 
-  // Auto-scroll
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
   }, [renderedLines]);
 
-  const getLineClasses = (line: TerminalLine) => {
-    switch (line.type) {
-      case "command":
-        return "text-white/90 font-medium";
-      case "output":
-        return "text-white/50";
-      case "tool":
-        return "text-primary/50 text-[13px]";
-      case "ai":
-        return "text-primary/90";
-      case "blank":
-        return "";
-      default:
-        return "text-white/70";
-    }
-  };
-
   const isCurrentlyTyping = phase.kind === "typing";
 
   return (
-    <div className="relative w-full max-w-[720px] mx-auto">
-      <div className="relative rounded-xl border border-white/[0.06] bg-[#0c1210] dark:bg-[#050a08] overflow-hidden shadow-2xl shadow-black/30 dark:shadow-black/50 dark">
-        {/* Title bar */}
-        <div className="flex items-center gap-2 px-4 py-2.5 border-b border-white/[0.04] bg-white/[0.02]">
-          <div className="flex gap-1.5">
-            <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
-            <div className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
-            <div className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
+    <div className="relative w-full max-w-[760px] mx-auto">
+      {/* Terminal window */}
+      <div className="relative rounded-xl overflow-hidden shadow-[0_25px_60px_-12px_rgba(0,0,0,0.5)] dark:shadow-[0_25px_80px_-12px_rgba(0,0,0,0.7)] dark">
+        {/* macOS title bar */}
+        <div className="flex items-center px-4 py-2.5 bg-[#1c1c1e] border-b border-white/[0.06]">
+          {/* Traffic lights */}
+          <div className="flex gap-2">
+            <div className="h-3 w-3 rounded-full bg-[#ff5f57] shadow-[inset_0_-1px_1px_rgba(0,0,0,0.15)]" />
+            <div className="h-3 w-3 rounded-full bg-[#febc2e] shadow-[inset_0_-1px_1px_rgba(0,0,0,0.15)]" />
+            <div className="h-3 w-3 rounded-full bg-[#28c840] shadow-[inset_0_-1px_1px_rgba(0,0,0,0.15)]" />
           </div>
-          <span className="flex-1 text-center text-[11px] text-white/30 font-mono">
-            claudeshell
-          </span>
-          <div className="w-[52px]" />
+          {/* Title */}
+          <div className="flex-1 flex items-center justify-center gap-1.5">
+            <span className="text-[11px] text-white/40 font-mono">
+              claudeshell
+            </span>
+            <span className="text-[10px] text-white/20">—</span>
+            <span className="text-[10px] text-white/20 font-mono">
+              80×24
+            </span>
+          </div>
+          {/* Balance */}
+          <div className="w-[60px]" />
         </div>
 
         {/* Terminal body */}
         <div
           ref={containerRef}
-          className="p-4 font-mono text-[13px] leading-[1.7] h-[480px] overflow-y-auto"
+          className="px-5 py-4 font-mono text-[14px] leading-[1.65] h-[480px] overflow-y-auto bg-[#0a0e12]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.008) 1px, transparent 1px)",
+            backgroundSize: "100% 23.1px",
+          }}
         >
           {renderedLines.map((entry, i) => {
-            // This is a prompt+typing line
+            // Typing line (prompt + partial command)
             if (entry.typed !== undefined) {
               return (
-                <div key={i} className="min-h-[1.5rem] flex items-center gap-2">
-                  <Prompt />
+                <div
+                  key={i}
+                  className="min-h-[1.5rem] flex items-center gap-2 flex-wrap"
+                >
+                  <PromptSegment />
                   <span className="text-white/90 font-medium">
                     {entry.typed}
                   </span>
@@ -209,51 +341,67 @@ export function TerminalDemo() {
               );
             }
 
-            // Finalized command line (after typing is done)
+            // Finished command
             if (entry.line.type === "command") {
               return (
-                <div key={i} className="min-h-[1.5rem] flex items-center gap-2">
-                  <Prompt />
+                <div
+                  key={i}
+                  className="min-h-[1.5rem] flex items-center gap-2 flex-wrap"
+                >
+                  <PromptSegment />
                   <span className="text-white/90 font-medium">
-                    {entry.line.text}
+                    {entry.line.content}
                   </span>
                 </div>
               );
             }
 
-            // All other lines
+            // Blank line
+            if (entry.line.type === "blank") {
+              return <div key={i} className="h-3" />;
+            }
+
+            // Code block (indented AI output)
+            if (entry.line.type === "ai-code") {
+              return (
+                <div
+                  key={i}
+                  className="min-h-[1.5rem] whitespace-pre rounded bg-white/[0.03] mx-1 px-3 py-1 my-0.5 border-l-2 border-[#00ff41]/20"
+                >
+                  {entry.line.content}
+                </div>
+              );
+            }
+
+            // Other lines (output, tool, ai)
             return (
-              <div
-                key={i}
-                className={`${getLineClasses(entry.line)} min-h-[1.5rem]`}
-              >
-                {entry.line.text}
+              <div key={i} className="min-h-[1.5rem] whitespace-pre-wrap">
+                {entry.line.content}
               </div>
             );
           })}
 
-          {/* Idle cursor on new prompt — only when NOT typing and NOT done */}
+          {/* Idle cursor */}
           {phase.kind === "waiting" &&
             phase.lineIndex < DEMO_LINES.length &&
             DEMO_LINES[phase.lineIndex]?.type === "prompt" && (
               <div className="min-h-[1.5rem] flex items-center gap-2">
-                <Prompt />
+                <PromptSegment />
                 <Cursor />
               </div>
             )}
 
-          {/* Show cursor after all lines rendered, waiting to restart */}
           {phase.kind === "done" && (
             <div className="min-h-[1.5rem] flex items-center gap-2 mt-1">
-              <Prompt />
+              <PromptSegment />
               <Cursor />
             </div>
           )}
         </div>
       </div>
 
-      {/* Subtle reflection */}
-      <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-2/3 h-10 bg-primary/6 blur-3xl rounded-full" />
+      {/* Ambient reflection */}
+      <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-3/4 h-12 bg-[#00ff41]/4 blur-3xl rounded-full pointer-events-none" />
     </div>
   );
 }
