@@ -30,6 +30,10 @@ export async function runShell(): Promise<void> {
     running: true,
     lastError: undefined,
     aiStreaming: false,
+    sessionId: undefined,
+    chatMode: false,
+    currentModel: undefined,
+    sessionCost: { totalCostUsd: 0, totalInputTokens: 0, totalOutputTokens: 0, messageCount: 0 },
   }
 
   let currentAbortController: AbortController | undefined
