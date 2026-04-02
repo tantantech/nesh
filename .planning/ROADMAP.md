@@ -133,7 +133,11 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. User can run interactive commands (vim, ssh, less, htop) and they display and accept input correctly
   2. After an interactive command exits, the shell prompt restores cleanly with no visual artifacts or broken input state
-**Plans**: TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 07-01-PLAN.md — Interactive command detection module, types/config extension, unit tests
+- [ ] 07-02-PLAN.md — Shell REPL integration with readline pause/resume and human verification
 
 ## Progress
 
@@ -149,4 +153,4 @@ Phases execute in numeric order: 4 -> 5 -> 6 -> 7
 | 4. Sessions & Chat Mode | v2.0 | 0/3 | Planned | - |
 | 5. Pipe & Unix Integration | v2.0 | 1/3 | In Progress | - |
 | 6. Context & Permissions | v2.0 | 0/3 | Planned | - |
-| 7. PTY & Polish | v2.0 | 0/0 | Not started | - |
+| 7. PTY & Polish | v2.0 | 0/2 | Planned | - |
