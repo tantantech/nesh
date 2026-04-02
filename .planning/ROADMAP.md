@@ -136,7 +136,7 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 07-01-PLAN.md — Interactive command detection module, types/config extension, unit tests
+- [x] 07-01-PLAN.md — Interactive command detection module, types/config extension, unit tests
 - [ ] 07-02-PLAN.md — Shell REPL integration with readline pause/resume and human verification
 
 ## Progress

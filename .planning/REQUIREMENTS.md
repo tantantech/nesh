@@ -43,7 +43,7 @@
 
 ### Interactive Commands
 
-- [ ] **PTY-01**: Interactive commands (vim, ssh, less, htop) work correctly via PTY passthrough
+- [x] **PTY-01**: Interactive commands (vim, ssh, less, htop) work correctly via PTY passthrough
 - [ ] **PTY-02**: Shell prompt restores cleanly after interactive command exits
 
 ### Configuration
@@ -106,7 +106,7 @@
 | PERM-03 | Phase 6 | Complete |
 | VIS-01 | Phase 4 | Complete |
 | VIS-02 | Phase 4 | Complete |
-| PTY-01 | Phase 7 | Pending |
+| PTY-01 | Phase 7 | Complete |
 | PTY-02 | Phase 7 | Pending |
 | CFG-01 | Phase 5 | Complete |
 | CFG-02 | Phase 6 | Complete |
