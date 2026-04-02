@@ -18,6 +18,7 @@ import type { ShellState } from './types.js'
 
 export async function runShell(): Promise<void> {
   const config = loadConfig()
+  const prefix = config.prefix ?? 'a'
   let currentTemplate = config.prompt_template ?? DEFAULT_TEMPLATE_NAME
   const historyLines = loadHistory(HISTORY_PATH)
 
@@ -78,7 +79,7 @@ export async function runShell(): Promise<void> {
       const template = getTemplateByName(currentTemplate) ?? getTemplateByName(DEFAULT_TEMPLATE_NAME)!
       const prompt = buildPromptFromTemplate(template, process.cwd(), os.homedir())
       const line = await rl.question(prompt)
-      const action = classifyInput(line)
+      const action = classifyInput(line, prefix)
 
       switch (action.type) {
         case 'empty':
@@ -151,7 +152,7 @@ export async function runShell(): Promise<void> {
               })
               const fixCmd = parseFixResponse(fixResponseText)
               if (fixCmd) {
-                process.stderr.write(`Suggested fix: ${fixCmd}. Type 'a fix' to run it.\n`)
+                process.stderr.write(`Suggested fix: ${fixCmd}. Type '${prefix} fix' to run it.\n`)
                 state = { ...state, lastSuggestedFix: fixCmd }
               } else {
                 process.stderr.write('Could not determine a fix for this error.\n')
