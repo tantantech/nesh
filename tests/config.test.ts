@@ -173,6 +173,139 @@ describe('resolveApiKey', () => {
   })
 })
 
+describe('loadProjectConfig', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('returns partial config when valid .claudeshell.json exists with model override', async () => {
+    vi.mocked(fs.readFileSync).mockImplementation((p) => {
+      const s = String(p)
+      if (s.endsWith('.claudeshell.json')) {
+        return JSON.stringify({ model: 'claude-opus' })
+      }
+      const err = new Error('ENOENT') as NodeJS.ErrnoException
+      err.code = 'ENOENT'
+      throw err
+    })
+    const { loadProjectConfig } = await loadModule()
+    const result = loadProjectConfig('/test/project')
+    expect(result).not.toBeNull()
+    expect(result!.model).toBe('claude-opus')
+  })
+
+  it('returns null when .claudeshell.json does not exist', async () => {
+    vi.mocked(fs.readFileSync).mockImplementation(() => {
+      const err = new Error('ENOENT') as NodeJS.ErrnoException
+      err.code = 'ENOENT'
+      throw err
+    })
+    const { loadProjectConfig } = await loadModule()
+    const result = loadProjectConfig('/no/config')
+    expect(result).toBeNull()
+  })
+
+  it('warns to stderr and returns null for invalid JSON', async () => {
+    vi.mocked(fs.readFileSync).mockImplementation((p) => {
+      const s = String(p)
+      if (s.endsWith('.claudeshell.json')) {
+        return 'not valid json {{{'
+      }
+      const err = new Error('ENOENT') as NodeJS.ErrnoException
+      err.code = 'ENOENT'
+      throw err
+    })
+    const stderrSpy = vi.spyOn(process.stderr, 'write').mockReturnValue(true)
+    const { loadProjectConfig } = await loadModule()
+    const result = loadProjectConfig('/bad/json')
+    expect(result).toBeNull()
+    expect(stderrSpy).toHaveBeenCalledWith(expect.stringContaining('Warning'))
+    stderrSpy.mockRestore()
+  })
+
+  it('validates fields -- only accepts known fields', async () => {
+    vi.mocked(fs.readFileSync).mockImplementation((p) => {
+      const s = String(p)
+      if (s.endsWith('.claudeshell.json')) {
+        return JSON.stringify({ model: 'claude-opus', unknown_field: 'ignored', extra: 123 })
+      }
+      const err = new Error('ENOENT') as NodeJS.ErrnoException
+      err.code = 'ENOENT'
+      throw err
+    })
+    const { loadProjectConfig } = await loadModule()
+    const result = loadProjectConfig('/test/project')
+    expect(result).not.toBeNull()
+    expect(result!.model).toBe('claude-opus')
+    expect((result as Record<string, unknown>).unknown_field).toBeUndefined()
+    expect((result as Record<string, unknown>).extra).toBeUndefined()
+  })
+
+  it('validates permissions field -- only accepts auto, ask, deny', async () => {
+    vi.mocked(fs.readFileSync).mockImplementation((p) => {
+      const s = String(p)
+      if (s.endsWith('.claudeshell.json')) {
+        return JSON.stringify({ permissions: 'invalid-mode' })
+      }
+      const err = new Error('ENOENT') as NodeJS.ErrnoException
+      err.code = 'ENOENT'
+      throw err
+    })
+    const { loadProjectConfig } = await loadModule()
+    const result = loadProjectConfig('/test/project')
+    // invalid permissions should be stripped
+    expect(result).toBeNull()  // no valid fields => null or empty
+  })
+})
+
+describe('mergeConfigs', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('returns global when project is null', async () => {
+    vi.mocked(fs.readFileSync).mockImplementation(() => {
+      const err = new Error('ENOENT') as NodeJS.ErrnoException
+      err.code = 'ENOENT'
+      throw err
+    })
+    const { mergeConfigs } = await loadModule()
+    const global = { model: 'claude-sonnet', history_size: 1000 }
+    const result = mergeConfigs(global, null)
+    expect(result).toEqual(global)
+  })
+
+  it('spreads project over global -- project model overrides global model', async () => {
+    vi.mocked(fs.readFileSync).mockImplementation(() => {
+      const err = new Error('ENOENT') as NodeJS.ErrnoException
+      err.code = 'ENOENT'
+      throw err
+    })
+    const { mergeConfigs } = await loadModule()
+    const global = { model: 'claude-sonnet', history_size: 1000 }
+    const project = { model: 'claude-opus' }
+    const result = mergeConfigs(global, project)
+    expect(result.model).toBe('claude-opus')
+    expect(result.history_size).toBe(1000)
+  })
+
+  it('preserves global fields not in project config', async () => {
+    vi.mocked(fs.readFileSync).mockImplementation(() => {
+      const err = new Error('ENOENT') as NodeJS.ErrnoException
+      err.code = 'ENOENT'
+      throw err
+    })
+    const { mergeConfigs } = await loadModule()
+    const global = { api_key: 'sk-global', model: 'claude-sonnet', history_size: 500 }
+    const project = { permissions: 'ask' as const }
+    const result = mergeConfigs(global, project)
+    expect(result.api_key).toBe('sk-global')
+    expect(result.model).toBe('claude-sonnet')
+    expect(result.history_size).toBe(500)
+    expect(result.permissions).toBe('ask')
+  })
+})
+
 describe('ensureConfigDir', () => {
   beforeEach(() => {
     vi.restoreAllMocks()

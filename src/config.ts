@@ -8,6 +8,17 @@ export interface ClaudeShellConfig {
   readonly history_size?: number
   readonly prompt_template?: string
   readonly prefix?: string
+  readonly permissions?: 'auto' | 'ask' | 'deny'
+}
+
+const VALID_PERMISSIONS = ['auto', 'ask', 'deny'] as const
+
+function validatePermissions(value: unknown): 'auto' | 'ask' | 'deny' | undefined {
+  if (typeof value !== 'string') return undefined
+  if ((VALID_PERMISSIONS as readonly string[]).includes(value)) {
+    return value as 'auto' | 'ask' | 'deny'
+  }
+  return undefined
 }
 
 function validatePrefix(value: unknown): string | undefined {
@@ -39,6 +50,7 @@ export function loadConfig(): ClaudeShellConfig {
       ...(typeof obj.history_size === 'number' ? { history_size: obj.history_size } : {}),
       ...(typeof obj.prompt_template === 'string' ? { prompt_template: obj.prompt_template } : {}),
       ...(validatePrefix(obj.prefix) !== undefined ? { prefix: validatePrefix(obj.prefix) } : {}),
+      ...(validatePermissions(obj.permissions) !== undefined ? { permissions: validatePermissions(obj.permissions) } : {}),
     }
 
     return config
@@ -67,4 +79,42 @@ export function ensureConfigDir(): void {
 export function saveConfig(config: ClaudeShellConfig): void {
   ensureConfigDir()
   fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2) + '\n', 'utf-8')
+}
+
+export function loadProjectConfig(cwd: string): Partial<ClaudeShellConfig> | null {
+  try {
+    const raw = fs.readFileSync(path.join(cwd, '.claudeshell.json'), 'utf-8')
+    const parsed: unknown = JSON.parse(raw)
+
+    if (typeof parsed !== 'object' || parsed === null) return null
+
+    const obj = parsed as Record<string, unknown>
+    const result: Record<string, unknown> = {}
+
+    if (typeof obj.api_key === 'string') result.api_key = obj.api_key
+    if (typeof obj.model === 'string') result.model = obj.model
+    const validatedPrefix = validatePrefix(obj.prefix)
+    if (validatedPrefix !== undefined) result.prefix = validatedPrefix
+    const validatedPerms = validatePermissions(obj.permissions)
+    if (validatedPerms !== undefined) result.permissions = validatedPerms
+
+    if (Object.keys(result).length === 0) return null
+
+    return result as Partial<ClaudeShellConfig>
+  } catch (err) {
+    const error = err as NodeJS.ErrnoException
+    if (error.code === 'ENOENT') return null
+    process.stderr.write(
+      `Warning: could not parse .claudeshell.json: ${error.message}\n`
+    )
+    return null
+  }
+}
+
+export function mergeConfigs(
+  global: ClaudeShellConfig,
+  project: Partial<ClaudeShellConfig> | null,
+): ClaudeShellConfig {
+  if (project === null) return global
+  return { ...global, ...project }
 }
