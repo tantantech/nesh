@@ -34,7 +34,7 @@
 
 - [ ] **PERM-01**: User can configure permission mode (auto-approve, ask-each-time, or deny-all) for AI file edits
 - [ ] **PERM-02**: When permission mode is "ask", user sees what Claude wants to do and can approve/deny inline
-- [ ] **PERM-03**: Permission mode is configurable globally and per-project
+- [x] **PERM-03**: Permission mode is configurable globally and per-project
 
 ### Visibility & Cost
 
@@ -103,7 +103,7 @@
 | CTX-02 | Phase 6 | Complete |
 | PERM-01 | Phase 6 | Pending |
 | PERM-02 | Phase 6 | Pending |
-| PERM-03 | Phase 6 | Pending |
+| PERM-03 | Phase 6 | Complete |
 | VIS-01 | Phase 4 | Complete |
 | VIS-02 | Phase 4 | Complete |
 | PTY-01 | Phase 7 | Pending |

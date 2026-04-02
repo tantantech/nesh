@@ -124,7 +124,7 @@ Plans:
 Plans:
 - [x] 06-01-PLAN.md — Types, context detection module, per-project config loading
 - [ ] 06-02-PLAN.md — Permission control in AI pipeline, /permissions chat command
-- [ ] 06-03-PLAN.md — Shell REPL integration: startup detection, cd re-detection wiring
+- [x] 06-03-PLAN.md — Shell REPL integration: startup detection, cd re-detection wiring
 
 ### Phase 7: PTY & Polish
 **Goal**: Interactive terminal programs work correctly inside ClaudeShell without visual glitches or broken input
