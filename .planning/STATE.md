@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: verifying
-stopped_at: Completed 03-02-PLAN.md
-last_updated: "2026-03-31T10:16:24.341Z"
+milestone: v2.0
+milestone_name: Sessions & Power Features
+status: ready_to_plan
+stopped_at: v2.0 roadmap created
+last_updated: "2026-03-31"
 last_activity: 2026-03-31
 progress:
-  total_phases: 3
-  completed_phases: 3
-  total_plans: 9
-  completed_plans: 9
+  total_phases: 4
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
   percent: 0
 ---
 
@@ -18,49 +18,40 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-31)
+See: .planning/PROJECT.md (updated 2026-04-02)
 
 **Core value:** Running AI-assisted commands feels as natural and fast as running normal shell commands
-**Current focus:** Phase 03 — distribution-platform
+**Current focus:** Phase 4 - Sessions & Chat Mode
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-04-02 — Milestone v2.0 started
+Phase: 4 of 7 (Sessions & Chat Mode)
+Plan: 0 of 0 in current phase (not yet planned)
+Status: Ready to plan
+Last activity: 2026-03-31 — v2.0 roadmap created
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [░░░░░░░░░░] 0% (v2.0 plans TBD)
 
 ## Performance Metrics
 
 **Velocity:**
+- Total plans completed: 9 (from v1.0)
+- Average duration: ~3 min/plan
+- Total execution time: ~25 min
 
-- Total plans completed: 0
-- Average duration: -
-- Total execution time: 0 hours
-
-**By Phase:**
+**By Phase (v1.0):**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 1. Shell Foundation | 4 | 12min | 3min |
+| 2. AI Integration | 3 | 8min | 3min |
+| 3. Distribution & Platform | 2 | 5min | 3min |
 
 **Recent Trend:**
-
-- Last 5 plans: -
-- Trend: -
+- Last 5 plans: 3min, 2min, 3min, 3min, 2min
+- Trend: Stable
 
 *Updated after each plan completion*
-| Phase 01 P01 | 2min | 3 tasks | 8 files |
-| Phase 01 P02 | 4min | 2 tasks | 5 files |
-| Phase 01 P03 | 3min | 2 tasks | 4 files |
-| Phase 01 P04 | 3min | 2 tasks | 1 files |
-| Phase 02-ai-integration P01 | 3min | 2 tasks | 7 files |
-| Phase 02-ai-integration P02 | 3min | 2 tasks | 6 files |
-| Phase 02-ai-integration P03 | 2min | 2 tasks | 2 files |
-| Phase 03-distribution-platform P01 | 3min | 2 tasks | 7 files |
-| Phase 03-distribution-platform P02 | 2min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -69,45 +60,22 @@ Progress: [░░░░░░░░░░] 0%
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- [Roadmap]: Coarse granularity -- 3 phases derived from requirement clusters
-- [Roadmap]: PLAT-01 (macOS) in Phase 1 as primary dev platform; PLAT-02 (Linux) deferred to Phase 3 for cross-platform validation
-- [Phase 01]: Node16 module resolution for ESM compatibility
-- [Phase 01]: ReadonlySet and readonly properties for immutability
-- [Phase 01]: Pure function modules for prompt and classifier (no side effects)
-- [Phase 01]: cd returns immutable CdState with previousDir tracking
-- [Phase 01]: History uses synchronous fs for shell startup/shutdown simplicity
-- [Phase 01]: spawn bash with inherited stdio for transparent terminal I/O
-- [Phase 01]: Catch ERR_USE_AFTER_CLOSE for Ctrl+D readline edge case
-- [Phase 01]: Spawn-based integration testing pattern for CLI verification
-- [Phase 02-ai-integration]: Replace ai_placeholder with ai in InputAction union for cleaner naming
-- [Phase 02-ai-integration]: Stderr tee pattern: pipe to buffer AND process.stderr for real-time display plus capture
-- [Phase 02-ai-integration]: Config resolution: env var ANTHROPIC_API_KEY first, then ~/.claudeshell/config JSON
-- [Phase 02-ai-integration]: Stream raw text for v1; markdown rendering deferred to v2
-- [Phase 02-ai-integration]: Simple dim Thinking... on stderr instead of ora spinner
-- [Phase 02-ai-integration]: Updated integration test to verify API key error instead of removed placeholder message
-- [Phase 03-distribution-platform]: Type-narrow each config field individually for safer JSON parsing
-- [Phase 03-distribution-platform]: Rename dist/cli.mjs to dist/cli.js post-build since tsdown lacks --out-extension flag
-- [Phase 03-distribution-platform]: Use createRequire for package.json version reading in ESM context
-- [Phase 03-distribution-platform]: Path audit confirmed all src/*.ts use os.homedir()+path.join(), no hardcoded paths
-- [Phase 03-distribution-platform]: CI script validates 8 checks: install, build, test, file exists, shebang, executable, pack contents, --version
+- [v2.0 Roadmap]: Sessions first (Phase 4) -- session ID is the shared state primitive that permissions, context, and cost attach to
+- [v2.0 Roadmap]: PTY deferred to last (Phase 7) -- highest risk (node-pty native build), lowest user coverage
+- [v2.0 Research]: 9 of 10 v2 features need zero new dependencies; primarily integration/wiring work
+- [v1.0]: `a` prefix collision risk -- configurable prefix addressed in Phase 5 (CFG-01)
 
 ### Pending Todos
 
 None yet.
 
-### Quick Tasks Completed
-
-| # | Description | Date | Commit | Directory |
-|---|-------------|------|--------|-----------|
-| 260401-oup | Add interactive prompt template selector with built-in template library | 2026-04-01 | fd60b79 | [260401-oup-add-interactive-prompt-template-selector](./quick/260401-oup-add-interactive-prompt-template-selector/) |
-
 ### Blockers/Concerns
 
-- Claude Agent SDK is at v0.2.x -- API surface may shift. Pin exact versions during Phase 2.
-- `a` prefix may collide with user aliases -- consider detection or configurability.
+- [Research]: Verify exact SDK field names for `SDKResultMessage` cost/token fields before implementing cost.ts (MEDIUM confidence)
+- [Research]: Verify `session_id` field and `resume` option behavior against installed SDK v0.2.88
 
 ## Session Continuity
 
-Last session: 2026-03-31T09:35:53.146Z
-Stopped at: Completed 03-02-PLAN.md
+Last session: 2026-03-31
+Stopped at: v2.0 roadmap created, ready to plan Phase 4
 Resume file: None
