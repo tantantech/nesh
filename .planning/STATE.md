@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-04-02)
 Phase: 4 of 7 (Sessions & Chat Mode)
 Plan: 0 of 0 in current phase (not yet planned)
 Status: Ready to plan
-Last activity: 2026-03-31 — v2.0 roadmap created
+Last activity: 2026-04-02 - Completed quick task 260402-e0m: Create CI/CD GitHub Actions to build binaries for macOS and Linux on version release
 
 Progress: [░░░░░░░░░░] 0% (v2.0 plans TBD)
 
@@ -75,6 +75,12 @@ None yet.
 
 - [Research]: Verify exact SDK field names for `SDKResultMessage` cost/token fields before implementing cost.ts (MEDIUM confidence)
 - [Research]: Verify `session_id` field and `resume` option behavior against installed SDK v0.2.88
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260402-e0m | Create CI/CD GitHub Actions to build binaries for macOS and Linux on version release | 2026-04-02 | 509e860 | [260402-e0m-create-ci-cd-github-actions-to-build-bin](./quick/260402-e0m-create-ci-cd-github-actions-to-build-bin/) |
 
 ## Session Continuity
 
