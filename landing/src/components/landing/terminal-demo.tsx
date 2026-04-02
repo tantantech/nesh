@@ -412,7 +412,7 @@ export function TerminalDemo() {
         {/* Terminal body */}
         <div
           ref={containerRef}
-          className="px-5 py-4 font-mono text-[14px] leading-[1.65] h-[480px] overflow-y-auto bg-[#0a0e12] scrollbar-thin"
+          className="px-5 py-4 font-mono text-[14px] leading-[1.65] h-[480px] overflow-y-auto bg-[#0a0e12] text-[#e0e8e4] scrollbar-thin"
           style={{
             backgroundImage:
               "linear-gradient(rgba(255,255,255,0.006) 1px, transparent 1px)",
