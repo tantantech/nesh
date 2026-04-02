@@ -72,7 +72,7 @@ Plans:
 - [ ] **Phase 4: Sessions & Chat Mode** - Persistent AI context, chat mode, model selection, and cost visibility
 - [ ] **Phase 5: Pipe & Unix Integration** - Pipe-friendly AI, automatic error recovery, and configurable prefix
 - [ ] **Phase 6: Context & Permissions** - Project awareness, permission control, and per-project config
-- [ ] **Phase 7: PTY & Polish** - Interactive command support via PTY passthrough
+- [x] **Phase 7: PTY & Polish** - Interactive command support via PTY passthrough (completed 2026-04-02)
 
 ## Phase Details
 
@@ -133,11 +133,11 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. User can run interactive commands (vim, ssh, less, htop) and they display and accept input correctly
   2. After an interactive command exits, the shell prompt restores cleanly with no visual artifacts or broken input state
-**Plans:** 2 plans
+**Plans:** 2/2 plans complete
 
 Plans:
 - [x] 07-01-PLAN.md — Interactive command detection module, types/config extension, unit tests
-- [ ] 07-02-PLAN.md — Shell REPL integration with readline pause/resume and human verification
+- [x] 07-02-PLAN.md — Shell REPL integration with readline pause/resume and human verification
 
 ## Progress
 
@@ -153,4 +153,4 @@ Phases execute in numeric order: 4 -> 5 -> 6 -> 7
 | 4. Sessions & Chat Mode | v2.0 | 0/3 | Planned | - |
 | 5. Pipe & Unix Integration | v2.0 | 1/3 | In Progress | - |
 | 6. Context & Permissions | v2.0 | 0/3 | Planned | - |
-| 7. PTY & Polish | v2.0 | 0/2 | Planned | - |
+| 7. PTY & Polish | v2.0 | 2/2 | Complete   | 2026-04-02 |
