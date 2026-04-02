@@ -40,6 +40,8 @@ export async function runShell(): Promise<void> {
     currentModel: config.model,
     sessionCost: EMPTY_ACCUMULATOR,
     lastSuggestedFix: undefined,
+    projectContext: null,
+    permissionMode: 'auto',
   }
 
   let currentAbortController: AbortController | undefined
