@@ -158,6 +158,17 @@
   -webkit-backdrop-filter: blur(12px) saturate(1.4);
 }
 
+/* Nav glassmorphism — white with opacity so grid bleeds through */
+.nav-glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(16px) saturate(1.6);
+  -webkit-backdrop-filter: blur(16px) saturate(1.6);
+}
+
+.dark .nav-glass {
+  background: rgba(3, 8, 6, 0.72);
+}
+
 /* Terminal glow effect */
 .terminal-glow {
   box-shadow:
