@@ -1,6 +1,8 @@
 import pc from 'picocolors'
 import { loadConfig, resolveApiKey } from './config.js'
-import type { LastError } from './types.js'
+import { buildResumeOptions, extractSessionId } from './session.js'
+import { extractUsage } from './cost.js'
+import type { LastError, AIResult, UsageInfo } from './types.js'
 
 export interface AICallbacks {
   readonly onText: (text: string) => void
@@ -100,9 +102,12 @@ export async function executeAI(
     readonly lastError: LastError | undefined
     readonly abortController: AbortController
     readonly callbacks: AICallbacks
+    readonly sessionId?: string
+    readonly model?: string
   }
-): Promise<void> {
+): Promise<AIResult> {
   const { cwd, lastError, abortController, callbacks } = options
+  const emptyResult: AIResult = { sessionId: undefined, usage: undefined }
 
   const config = loadConfig()
   const apiKey = resolveApiKey(config)
@@ -110,10 +115,12 @@ export async function executeAI(
     callbacks.onError(
       'Set ANTHROPIC_API_KEY to use AI commands. Example: export ANTHROPIC_API_KEY=sk-ant-...'
     )
-    return
+    return emptyResult
   }
 
   let firstText = true
+  let capturedSessionId: string | undefined
+  let capturedUsage: UsageInfo | undefined
 
   try {
     process.stderr.write(pc.dim('Thinking...\r'))
@@ -136,6 +143,8 @@ export async function executeAI(
         permissionMode: 'acceptEdits' as const,
         cwd,
         systemPrompt,
+        ...buildResumeOptions(options.sessionId),
+        ...(options.model ? { model: options.model } : {}),
       }
     })
 
@@ -166,14 +175,33 @@ export async function executeAI(
         }
       } else if (msg.type === 'assistant' && msg.error) {
         callbacks.onError(mapSDKError(msg.error))
+      } else if (msg.type === 'result' && !msg.is_error) {
+        const resultMsg = msg as unknown as Record<string, unknown>
+        try {
+          if (typeof resultMsg.session_id === 'string') {
+            capturedSessionId = extractSessionId(resultMsg as { readonly session_id: string })
+          }
+          if (resultMsg.usage && typeof resultMsg.total_cost_usd === 'number' && typeof resultMsg.duration_ms === 'number') {
+            capturedUsage = extractUsage(resultMsg as {
+              readonly usage: { readonly input_tokens: number; readonly output_tokens: number }
+              readonly total_cost_usd: number
+              readonly duration_ms: number
+            })
+          }
+        } catch {
+          // Usage extraction failed -- non-fatal, continue
+        }
       } else if (msg.type === 'result' && msg.is_error) {
         callbacks.onError('AI request failed')
       }
     }
   } catch (error: unknown) {
     if (isAbortError(error) || abortController.signal.aborted) {
-      return
+      return emptyResult
     }
     callbacks.onError(classifyError(error))
+    return emptyResult
   }
+
+  return { sessionId: capturedSessionId, usage: capturedUsage }
 }

@@ -76,6 +76,52 @@ describe('classifyInput', () => {
     })
   })
 
+  describe('model flag parsing', () => {
+    it('parses --haiku flag and returns model', () => {
+      expect(classifyInput('a --haiku what is rust')).toEqual({
+        type: 'ai',
+        prompt: 'what is rust',
+        model: 'claude-haiku-4-5-20251001',
+      })
+    })
+
+    it('parses --sonnet flag and returns model', () => {
+      expect(classifyInput('a --sonnet explain this')).toEqual({
+        type: 'ai',
+        prompt: 'explain this',
+        model: 'claude-sonnet-4-5-20250514',
+      })
+    })
+
+    it('parses --opus flag and returns model', () => {
+      expect(classifyInput('a --opus analyze')).toEqual({
+        type: 'ai',
+        prompt: 'analyze',
+        model: 'claude-opus-4-6-20250414',
+      })
+    })
+
+    it('parses --haiku with no prompt', () => {
+      expect(classifyInput('a --haiku')).toEqual({
+        type: 'ai',
+        prompt: '',
+        model: 'claude-haiku-4-5-20251001',
+      })
+    })
+
+    it('returns no model field for plain ai command', () => {
+      const result = classifyInput('a hello world')
+      expect(result).toEqual({ type: 'ai', prompt: 'hello world' })
+      expect(result).not.toHaveProperty('model')
+    })
+
+    it('returns no model field for bare "a"', () => {
+      const result = classifyInput('a')
+      expect(result).toEqual({ type: 'ai', prompt: '' })
+      expect(result).not.toHaveProperty('model')
+    })
+  })
+
   describe('edge cases', () => {
     it('trims leading and trailing whitespace before classifying', () => {
       expect(classifyInput('  cd /tmp  ')).toEqual({ type: 'builtin', name: 'cd', args: '/tmp' })

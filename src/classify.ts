@@ -2,13 +2,34 @@ import type { InputAction, BuiltinName } from './types.js'
 
 const BUILTINS: ReadonlySet<string> = new Set(['cd', 'exit', 'quit', 'clear', 'export', 'theme'])
 
+const MODEL_FLAGS: Readonly<Record<string, string>> = {
+  '--haiku': 'claude-haiku-4-5-20251001',
+  '--sonnet': 'claude-sonnet-4-5-20250514',
+  '--opus': 'claude-opus-4-6-20250414',
+}
+
+function extractModelFlag(prompt: string): { readonly model?: string; readonly cleanPrompt: string } {
+  const spaceIdx = prompt.indexOf(' ')
+  const firstToken = spaceIdx === -1 ? prompt : prompt.slice(0, spaceIdx)
+  const mapped = MODEL_FLAGS[firstToken]
+  if (mapped) {
+    return { model: mapped, cleanPrompt: spaceIdx === -1 ? '' : prompt.slice(spaceIdx + 1).trim() }
+  }
+  return { cleanPrompt: prompt }
+}
+
 export function classifyInput(line: string): InputAction {
   const trimmed = line.trim()
   if (!trimmed) return { type: 'empty' }
 
   // 'a' prefix routes to AI processing
   if (trimmed === 'a' || trimmed.startsWith('a ')) {
-    return { type: 'ai', prompt: trimmed.slice(2).trim() }
+    const rawPrompt = trimmed.slice(2).trim()
+    const { model, cleanPrompt } = extractModelFlag(rawPrompt)
+    if (model) {
+      return { type: 'ai', prompt: cleanPrompt, model }
+    }
+    return { type: 'ai', prompt: cleanPrompt }
   }
 
   const spaceIndex = trimmed.indexOf(' ')
