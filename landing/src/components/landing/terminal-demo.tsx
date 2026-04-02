@@ -191,7 +191,7 @@ export function TerminalDemo() {
         {/* Terminal body */}
         <div
           ref={containerRef}
-          className="p-4 font-mono text-[13px] leading-[1.7] h-[360px] overflow-y-auto"
+          className="p-4 font-mono text-[13px] leading-[1.7] h-[480px] overflow-y-auto"
         >
           {renderedLines.map((entry, i) => {
             // This is a prompt+typing line
