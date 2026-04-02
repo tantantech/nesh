@@ -16,9 +16,9 @@
 
 ### Pipe & Unix Integration
 
-- [ ] **PIPE-01**: User can pipe input to AI (`cat log.txt | a summarize`) — stdin is passed as context
-- [ ] **PIPE-02**: When stdout is piped, AI output is plain text without colors or markdown formatting
-- [ ] **PIPE-03**: User can chain AI output into other commands (`a generate csv | head -5`)
+- [x] **PIPE-01**: User can pipe input to AI (`cat log.txt | a summarize`) — stdin is passed as context
+- [x] **PIPE-02**: When stdout is piped, AI output is plain text without colors or markdown formatting
+- [x] **PIPE-03**: User can chain AI output into other commands (`a generate csv | head -5`)
 
 ### Error Recovery
 
@@ -94,9 +94,9 @@
 | SESS-04 | Phase 4 | Complete |
 | SESS-05 | Phase 4 | Complete |
 | SESS-06 | Phase 4 | Complete |
-| PIPE-01 | Phase 5 | Pending |
-| PIPE-02 | Phase 5 | Pending |
-| PIPE-03 | Phase 5 | Pending |
+| PIPE-01 | Phase 5 | Complete |
+| PIPE-02 | Phase 5 | Complete |
+| PIPE-03 | Phase 5 | Complete |
 | ERR-04 | Phase 5 | Pending |
 | ERR-05 | Phase 5 | Pending |
 | CTX-01 | Phase 6 | Pending |

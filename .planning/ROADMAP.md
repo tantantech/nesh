@@ -106,7 +106,7 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — Pipe mode: stdin detection, pipe.ts module, cli.ts wiring
+- [x] 05-01-PLAN.md — Pipe mode: stdin detection, pipe.ts module, cli.ts wiring
 - [ ] 05-02-PLAN.md — Error recovery: auto-fix suggestions and `a fix` command
 - [ ] 05-03-PLAN.md — Configurable AI command prefix
 
@@ -142,6 +142,6 @@ Phases execute in numeric order: 4 -> 5 -> 6 -> 7
 | 2. AI Integration | v1.0 | 3/3 | Complete | - |
 | 3. Distribution & Platform | v1.0 | 2/2 | Complete | - |
 | 4. Sessions & Chat Mode | v2.0 | 0/3 | Planned | - |
-| 5. Pipe & Unix Integration | v2.0 | 0/3 | Planned | - |
+| 5. Pipe & Unix Integration | v2.0 | 1/3 | In Progress | - |
 | 6. Context & Permissions | v2.0 | 0/0 | Not started | - |
 | 7. PTY & Polish | v2.0 | 0/0 | Not started | - |
