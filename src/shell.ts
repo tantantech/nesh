@@ -1,3 +1,4 @@
+import pc from 'picocolors'
 import * as readline from 'node:readline/promises'
 import * as os from 'node:os'
 import process from 'node:process'
@@ -5,13 +6,13 @@ import { buildPrompt } from './prompt.js'
 import { classifyInput } from './classify.js'
 import { executeCd, executeExport, executeTheme } from './builtins.js'
 import { executeCommand } from './passthrough.js'
-import { executeAI } from './ai.js'
+import { executeAI, buildFixPrompt, parseFixResponse } from './ai.js'
 import { createRenderer, renderCostFooter } from './renderer.js'
 import { createSessionId } from './session.js'
 import { EMPTY_ACCUMULATOR, accumulate } from './cost.js'
 import { runChatMode } from './chat.js'
 import { loadHistory, saveHistory, shouldSaveToHistory, HISTORY_PATH } from './history.js'
-import { loadConfig, saveConfig } from './config.js'
+import { loadConfig, saveConfig, resolveApiKey } from './config.js'
 import { getTemplateByName, buildPromptFromTemplate, DEFAULT_TEMPLATE_NAME } from './templates.js'
 import type { ShellState } from './types.js'
 
@@ -37,6 +38,7 @@ export async function runShell(): Promise<void> {
     chatMode: false,
     currentModel: config.model,
     sessionCost: EMPTY_ACCUMULATOR,
+    lastSuggestedFix: undefined,
   }
 
   let currentAbortController: AbortController | undefined
@@ -119,22 +121,75 @@ export async function runShell(): Promise<void> {
           const result = await executeCommand(action.command)
           if (result.exitCode !== 0) {
             process.stderr.write(`[exit: ${result.exitCode}]\n`)
-            process.stderr.write(`Command failed. Type 'a explain' to ask AI about the error.\n`)
-            state = {
-              ...state,
-              lastError: {
-                command: action.command,
-                stderr: result.stderr,
-                exitCode: result.exitCode,
-              },
+            const lastError = {
+              command: action.command,
+              stderr: result.stderr,
+              exitCode: result.exitCode,
+            } as const
+            state = { ...state, lastError, lastSuggestedFix: undefined }
+
+            // Auto-suggest fix via AI (skip if no API key)
+            try {
+              const fixConfig = loadConfig()
+              const hasApiKey = Boolean(resolveApiKey(fixConfig))
+              if (!hasApiKey) break
+              process.stderr.write(pc.dim('Analyzing error...\r'))
+              const fixAbortController = new AbortController()
+              let fixResponseText = ''
+              await executeAI(buildFixPrompt(lastError), {
+                cwd: process.cwd(),
+                lastError: undefined,
+                abortController: fixAbortController,
+                callbacks: {
+                  onText: (text) => { fixResponseText += text },
+                  onToolStart: () => {},
+                  onToolEnd: () => {},
+                  onError: (msg) => { process.stderr.write(msg + '\n') },
+                },
+                sessionId: state.sessionId,
+                model: state.currentModel,
+              })
+              const fixCmd = parseFixResponse(fixResponseText)
+              if (fixCmd) {
+                process.stderr.write(`Suggested fix: ${fixCmd}. Type 'a fix' to run it.\n`)
+                state = { ...state, lastSuggestedFix: fixCmd }
+              } else {
+                process.stderr.write('Could not determine a fix for this error.\n')
+              }
+            } catch {
+              process.stderr.write('Could not determine a fix for this error.\n')
             }
           } else {
-            state = { ...state, lastError: undefined }
+            state = { ...state, lastError: undefined, lastSuggestedFix: undefined }
           }
           break
         }
 
         case 'ai': {
+          // Handle 'a fix' command -- execute last suggested fix
+          if (action.prompt === 'fix' && state.lastSuggestedFix) {
+            const fixResult = await executeCommand(state.lastSuggestedFix)
+            if (fixResult.exitCode !== 0) {
+              process.stderr.write(`[exit: ${fixResult.exitCode}]\n`)
+              state = {
+                ...state,
+                lastError: {
+                  command: state.lastSuggestedFix,
+                  stderr: fixResult.stderr,
+                  exitCode: fixResult.exitCode,
+                },
+                lastSuggestedFix: undefined,
+              }
+            } else {
+              state = { ...state, lastError: undefined, lastSuggestedFix: undefined }
+            }
+            break
+          }
+          if (action.prompt === 'fix' && !state.lastSuggestedFix) {
+            process.stderr.write('No fix available. Run a command first.\n')
+            break
+          }
+
           // Empty prompt means enter chat mode
           if (!action.prompt) {
             state = { ...state, chatMode: true }
