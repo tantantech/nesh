@@ -84,9 +84,26 @@ export function loadConfig(): NeshConfig {
 }
 
 const PROVIDER_KEY_ENV_VARS: Readonly<Record<string, string>> = {
+  // Tier 1: Big Tech
   anthropic: 'ANTHROPIC_API_KEY',
+  claude: 'ANTHROPIC_API_KEY',
   openai: 'OPENAI_API_KEY',
   google: 'GOOGLE_API_KEY',
+  azure: 'AZURE_OPENAI_API_KEY',
+  // Tier 2: Major AI Companies
+  xai: 'XAI_API_KEY',
+  deepseek: 'DEEPSEEK_API_KEY',
+  mistral: 'MISTRAL_API_KEY',
+  cohere: 'COHERE_API_KEY',
+  minimax: 'MINIMAX_API_KEY',
+  // Tier 3: Fast Inference / Open-Source Hosts
+  groq: 'GROQ_API_KEY',
+  together: 'TOGETHER_API_KEY',
+  fireworks: 'FIREWORKS_API_KEY',
+  // Tier 4: Aggregators / Local
+  openrouter: 'OPENROUTER_API_KEY',
+  perplexity: 'PERPLEXITY_API_KEY',
+  // ollama intentionally omitted — no key needed (local)
 }
 
 export function resolveProviderKey(providerName: string, config?: NeshConfig): string | undefined {

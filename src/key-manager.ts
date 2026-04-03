@@ -3,7 +3,15 @@ import * as readline from 'node:readline/promises'
 import { loadConfig, saveConfig, maskKey, resolveProviderKey } from './config.js'
 import { PROVIDER_ENV_VARS, PROVIDER_DISPLAY_NAMES } from './providers/index.js'
 
-const PROVIDER_NAMES = ['anthropic', 'openai', 'google'] as const
+// Providers grouped by tier for display — excludes azure (special auth) and ollama (no key)
+const PROVIDER_TIERS: ReadonlyArray<{ readonly label: string; readonly providers: readonly string[] }> = [
+  { label: 'Big Tech',                   providers: ['claude', 'openai', 'google'] },
+  { label: 'Major AI Companies',         providers: ['xai', 'deepseek', 'mistral', 'cohere', 'minimax'] },
+  { label: 'Fast Inference',             providers: ['groq', 'together', 'fireworks'] },
+  { label: 'Aggregators',                providers: ['openrouter', 'perplexity'] },
+]
+
+const PROVIDER_NAMES = PROVIDER_TIERS.flatMap(t => t.providers)
 
 export async function executeKeyManager(rl: readline.Interface): Promise<void> {
   process.stdout.write('\nAPI Key Management\n\n')
@@ -32,27 +40,35 @@ export async function executeKeyManager(rl: readline.Interface): Promise<void> {
 function viewKeys(): void {
   process.stdout.write('\nConfigured API Keys:\n\n')
 
-  for (const provider of PROVIDER_NAMES) {
-    const displayName = PROVIDER_DISPLAY_NAMES[provider] ?? provider
-    const key = resolveProviderKey(provider)
-    const envVar = PROVIDER_ENV_VARS[provider] ?? ''
-    const envSet = envVar ? Boolean(process.env[envVar]) : false
+  for (const tier of PROVIDER_TIERS) {
+    process.stdout.write(`  ${pc.dim(`── ${tier.label} ──`)}\n`)
+    for (const provider of tier.providers) {
+      const displayName = PROVIDER_DISPLAY_NAMES[provider] ?? provider
+      const key = resolveProviderKey(provider)
+      const envVar = PROVIDER_ENV_VARS[provider] ?? ''
+      const envSet = envVar ? Boolean(process.env[envVar]) : false
 
-    if (key) {
-      const source = envSet ? '(env)' : '(config)'
-      process.stdout.write(`  ${pc.bold(displayName)}: ${maskKey(key)} ${pc.dim(source)}\n`)
-    } else {
-      process.stdout.write(`  ${pc.bold(displayName)}: ${pc.dim('not configured')}\n`)
+      if (key) {
+        const source = envSet ? '(env)' : '(config)'
+        process.stdout.write(`  ${pc.bold(displayName)}: ${maskKey(key)} ${pc.dim(source)}\n`)
+      } else {
+        process.stdout.write(`  ${pc.bold(displayName)}: ${pc.dim('not configured')}\n`)
+      }
     }
+    process.stdout.write('\n')
   }
-  process.stdout.write('\n')
 }
 
 async function addKey(rl: readline.Interface): Promise<void> {
   process.stdout.write('\nSelect provider:\n\n')
-  for (let i = 0; i < PROVIDER_NAMES.length; i++) {
-    const displayName = PROVIDER_DISPLAY_NAMES[PROVIDER_NAMES[i]] ?? PROVIDER_NAMES[i]
-    process.stdout.write(`  [${i + 1}] ${displayName}\n`)
+  let index = 0
+  for (const tier of PROVIDER_TIERS) {
+    process.stdout.write(`  ${pc.dim(`── ${tier.label} ──`)}\n`)
+    for (const provider of tier.providers) {
+      index++
+      const displayName = PROVIDER_DISPLAY_NAMES[provider] ?? provider
+      process.stdout.write(`  [${index}] ${displayName}\n`)
+    }
   }
   process.stdout.write('\n')
 

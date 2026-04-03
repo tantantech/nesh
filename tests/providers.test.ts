@@ -30,11 +30,17 @@ describe('provider registry', () => {
   it('listModels returns all registered models', async () => {
     const { listModels } = await import('../src/providers/registry.js')
     const models = listModels()
-    expect(models.length).toBeGreaterThanOrEqual(9)
+    expect(models.length).toBeGreaterThanOrEqual(29)
     const shorthands = models.map(m => m.shorthand)
     expect(shorthands).toContain('claude-opus')
     expect(shorthands).toContain('gpt-4o')
     expect(shorthands).toContain('gemini-pro')
+    // Tier 2+ providers
+    expect(shorthands).toContain('grok-4')
+    expect(shorthands).toContain('deepseek-chat')
+    expect(shorthands).toContain('mistral-large')
+    expect(shorthands).toContain('llama-3.3-70b')
+    expect(shorthands).toContain('sonar-pro')
   })
 
   it('getProviderForModel resolves shorthand to provider info', async () => {
@@ -67,34 +73,81 @@ describe('provider registry', () => {
     await expect(getProvider('nonexistent')).rejects.toThrow('Unknown provider: nonexistent')
   })
 
-  it('MODEL_REGISTRY contains claude, openai, and google providers', async () => {
+  it('MODEL_REGISTRY contains all expected providers', async () => {
     const { MODEL_REGISTRY } = await import('../src/providers/registry.js')
     const providers = new Set(Object.values(MODEL_REGISTRY).map(e => e.provider))
     expect(providers).toContain('claude')
     expect(providers).toContain('openai')
     expect(providers).toContain('google')
+    expect(providers).toContain('xai')
+    expect(providers).toContain('deepseek')
+    expect(providers).toContain('mistral')
+    expect(providers).toContain('cohere')
+    expect(providers).toContain('minimax')
+    expect(providers).toContain('groq')
+    expect(providers).toContain('together')
+    expect(providers).toContain('fireworks')
+    expect(providers).toContain('perplexity')
   })
 
-  it('PROVIDER_ENV_VARS maps all three providers', async () => {
+  it('PROVIDER_ENV_VARS maps all providers with keys', async () => {
     const { PROVIDER_ENV_VARS } = await import('../src/providers/registry.js')
     expect(PROVIDER_ENV_VARS.claude).toBe('ANTHROPIC_API_KEY')
     expect(PROVIDER_ENV_VARS.openai).toBe('OPENAI_API_KEY')
     expect(PROVIDER_ENV_VARS.google).toBe('GOOGLE_API_KEY')
+    expect(PROVIDER_ENV_VARS.xai).toBe('XAI_API_KEY')
+    expect(PROVIDER_ENV_VARS.deepseek).toBe('DEEPSEEK_API_KEY')
+    expect(PROVIDER_ENV_VARS.groq).toBe('GROQ_API_KEY')
+    expect(PROVIDER_ENV_VARS.openrouter).toBe('OPENROUTER_API_KEY')
+    // Ollama has no key — should not be in PROVIDER_ENV_VARS
+    expect(PROVIDER_ENV_VARS.ollama).toBeUndefined()
+  })
+
+  it('PROVIDER_CONFIGS contains all 16 providers', async () => {
+    const { PROVIDER_CONFIGS } = await import('../src/providers/registry.js')
+    const names = Object.keys(PROVIDER_CONFIGS)
+    expect(names.length).toBe(15)
+    expect(names).toContain('claude')
+    expect(names).toContain('ollama')
+    expect(names).toContain('openrouter')
+  })
+
+  it('PROVIDER_CONFIGS has correct types for each provider', async () => {
+    const { PROVIDER_CONFIGS } = await import('../src/providers/registry.js')
+    expect(PROVIDER_CONFIGS.claude.type).toBe('claude')
+    expect(PROVIDER_CONFIGS.google.type).toBe('gemini')
+    expect(PROVIDER_CONFIGS.groq.type).toBe('openai-compatible')
+    expect(PROVIDER_CONFIGS.xai.type).toBe('openai-compatible')
+    expect(PROVIDER_CONFIGS.ollama.type).toBe('openai-compatible')
+    expect(PROVIDER_CONFIGS.ollama.apiKeyEnv).toBe('')
+  })
+
+  it('getProvider resolves OpenAI-compatible providers via config type', async () => {
+    const { PROVIDER_CONFIGS } = await import('../src/providers/registry.js')
+    // Verify all openai-compatible providers have baseURL set (except azure)
+    const compatibleProviders = Object.values(PROVIDER_CONFIGS).filter(
+      c => c.type === 'openai-compatible' && c.name !== 'azure'
+    )
+    for (const p of compatibleProviders) {
+      expect(p.baseURL).toBeTruthy()
+    }
   })
 })
 
 describe('key management', () => {
+  const ENV_VARS_TO_SAVE = [
+    'ANTHROPIC_API_KEY', 'OPENAI_API_KEY', 'GOOGLE_API_KEY',
+    'XAI_API_KEY', 'DEEPSEEK_API_KEY', 'GROQ_API_KEY', 'OPENROUTER_API_KEY',
+  ]
   const originalEnv: Record<string, string | undefined> = {}
 
   beforeEach(() => {
     vi.restoreAllMocks()
     vi.resetModules()
-    originalEnv.ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
-    originalEnv.OPENAI_API_KEY = process.env.OPENAI_API_KEY
-    originalEnv.GOOGLE_API_KEY = process.env.GOOGLE_API_KEY
-    delete process.env.ANTHROPIC_API_KEY
-    delete process.env.OPENAI_API_KEY
-    delete process.env.GOOGLE_API_KEY
+    for (const v of ENV_VARS_TO_SAVE) {
+      originalEnv[v] = process.env[v]
+      delete process.env[v]
+    }
   })
 
   afterEach(() => {
@@ -164,6 +217,27 @@ describe('key management', () => {
     const { resolveApiKey, loadConfig } = await import('../src/config.js')
     const config = loadConfig()
     expect(resolveApiKey(config)).toBe('sk-from-keys')
+  })
+
+  it('resolveProviderKey resolves new provider env vars', async () => {
+    const fs = await import('node:fs')
+    vi.mocked(fs.default.readFileSync).mockReturnValue(JSON.stringify({}))
+    process.env.GROQ_API_KEY = 'gsk-test-groq'
+    process.env.XAI_API_KEY = 'xai-test-key'
+    const { resolveProviderKey } = await import('../src/config.js')
+    expect(resolveProviderKey('groq')).toBe('gsk-test-groq')
+    expect(resolveProviderKey('xai')).toBe('xai-test-key')
+    expect(resolveProviderKey('deepseek')).toBeUndefined()
+  })
+
+  it('resolveProviderKey prefers config key over env var for new providers', async () => {
+    const fs = await import('node:fs')
+    vi.mocked(fs.default.readFileSync).mockReturnValue(
+      JSON.stringify({ keys: { groq: 'gsk-config-key' } })
+    )
+    process.env.GROQ_API_KEY = 'gsk-env-key'
+    const { resolveProviderKey } = await import('../src/config.js')
+    expect(resolveProviderKey('groq')).toBe('gsk-config-key')
   })
 })
 

@@ -1,22 +1,36 @@
 import type { AIProvider, ProviderOptions, StreamEvent } from './provider.js'
 import { resolveProviderKey } from '../config.js'
 
-export function createOpenAIProvider(): AIProvider {
+export interface OpenAIProviderOptions {
+  readonly providerName: string
+  readonly displayName: string
+  readonly baseURL: string
+}
+
+export function createOpenAIProvider(opts?: OpenAIProviderOptions): AIProvider {
+  const providerName = opts?.providerName ?? 'openai'
+  const displayName = opts?.displayName ?? 'OpenAI'
+  const baseURL = opts?.baseURL ?? 'https://api.openai.com/v1'
+
   return {
-    name: 'openai',
-    displayName: 'OpenAI',
+    name: providerName,
+    displayName,
 
     async *query(prompt: string, options: ProviderOptions): AsyncGenerator<StreamEvent> {
-      const apiKey = resolveProviderKey('openai')
+      // Ollama (local) needs no API key; all others do
+      const apiKey = providerName === 'ollama'
+        ? (resolveProviderKey('ollama') ?? 'ollama')
+        : resolveProviderKey(providerName)
+
       if (!apiKey) {
-        throw new Error('OpenAI API key not configured. Run `keys` to add one, or set OPENAI_API_KEY.')
+        throw new Error(`${displayName} API key not configured. Run \`keys\` to add one, or set the appropriate env var.`)
       }
 
       const startTime = Date.now()
 
       // Lazy-load the OpenAI SDK
       const { default: OpenAI } = await import('openai')
-      const client = new OpenAI({ apiKey })
+      const client = new OpenAI({ apiKey, baseURL })
 
       const systemPrompt = options.systemPrompt ?? 'You are a helpful AI assistant running inside a terminal shell.'
 
