@@ -36,8 +36,10 @@
   "description": "Nesh — an AI-native terminal shell powered by Claude",
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "^0.2.90",
+    "@google/generative-ai": "^0.24.1",
     "marked": "^15.0.12",
     "marked-terminal": "^7.3.0",
+    "openai": "^6.33.0",
     "picocolors": "^1.1.1"
   },
   "devDependencies": {
