@@ -7,11 +7,17 @@ const modules = [
   { name: "builtins.ts", desc: "cd, export, exit", color: "bg-emerald-500/15 border-emerald-500/25" },
   { name: "passthrough.ts", desc: "bash -c spawn", color: "bg-teal-500/15 border-teal-500/25" },
   { name: "ai.ts", desc: "Agent SDK", color: "bg-cyan-500/15 border-cyan-500/25" },
+  { name: "chat.ts", desc: "Chat mode", color: "bg-cyan-500/15 border-cyan-500/25" },
   { name: "renderer.ts", desc: "Markdown output", color: "bg-cyan-500/15 border-cyan-500/25" },
   { name: "config.ts", desc: "Settings", color: "bg-emerald-500/10 border-emerald-500/20" },
+  { name: "context.ts", desc: "Project detection", color: "bg-emerald-500/10 border-emerald-500/20" },
+  { name: "cost.ts", desc: "Token tracking", color: "bg-emerald-500/10 border-emerald-500/20" },
+  { name: "session.ts", desc: "Session state", color: "bg-teal-500/15 border-teal-500/25" },
   { name: "prompt.ts", desc: "Powerline prompt", color: "bg-emerald-500/10 border-emerald-500/20" },
+  { name: "templates.ts", desc: "Prompt themes", color: "bg-teal-500/10 border-teal-500/20" },
   { name: "history.ts", desc: "Command history", color: "bg-emerald-500/10 border-emerald-500/20" },
-  { name: "templates.ts", desc: "Prompt templates", color: "bg-teal-500/10 border-teal-500/20" },
+  { name: "pipe.ts", desc: "Pipe mode", color: "bg-teal-500/10 border-teal-500/20" },
+  { name: "interactive.ts", desc: "Interactive cmds", color: "bg-teal-500/10 border-teal-500/20" },
   { name: "types.ts", desc: "Type definitions", color: "bg-teal-500/10 border-teal-500/20" },
 ];
 
@@ -29,7 +35,7 @@ export function Architecture() {
             <span className="text-primary text-glow">minimal</span>
           </h2>
           <p className="mt-4 text-muted-foreground max-w-lg mx-auto">
-            12 modules. ~650 lines. Every module has a single responsibility.
+            18 modules. ~1750 lines. Every module has a single responsibility.
           </p>
         </div>
 
@@ -67,7 +73,7 @@ export function Architecture() {
         {/* Tech stack badges */}
         <div className="flex flex-wrap items-center justify-center gap-3 mt-12">
           {[
-            "Node.js 22+",
+            "Node.js 24+",
             "TypeScript 6",
             "Claude Agent SDK",
             "ESM",

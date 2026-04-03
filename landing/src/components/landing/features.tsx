@@ -10,6 +10,12 @@ import {
   ArrowRight,
   Command,
   Layers,
+  MessageSquare,
+  Palette,
+  PipetteIcon,
+  Settings,
+  DollarSign,
+  Cpu,
 } from "lucide-react";
 
 const features = [
@@ -28,46 +34,74 @@ const features = [
     accent: "from-green-500/20 to-emerald-500/20",
   },
   {
+    icon: MessageSquare,
+    title: "Chat Mode",
+    description:
+      'Type "a" alone to enter persistent chat. Multi-turn conversations with full tool access. /exit to return.',
+    accent: "from-teal-500/20 to-cyan-500/20",
+  },
+  {
+    icon: Cpu,
+    title: "Model Selection",
+    description:
+      "Choose your model per query: --opus for deep reasoning, --haiku for quick answers, --sonnet by default.",
+    accent: "from-cyan-500/20 to-emerald-500/20",
+  },
+  {
+    icon: FileCode,
+    title: "Error Auto-Fix",
+    description:
+      'Failed commands are analyzed instantly. Nesh suggests a fix and "a fix" applies it. Zero copy-paste.',
+    accent: "from-emerald-500/20 to-green-500/20",
+  },
+  {
+    icon: PipetteIcon,
+    title: "Pipe Mode",
+    description:
+      "Works as a Unix pipe citizen. Pipe files into Nesh or pipe AI output to other commands.",
+    accent: "from-green-500/20 to-teal-500/20",
+  },
+  {
+    icon: Palette,
+    title: "5 Prompt Themes",
+    description:
+      'Type "theme" to switch: Minimal, Classic, Powerline, Hacker, or Pastel. Instant style change.',
+    accent: "from-teal-500/20 to-emerald-500/20",
+  },
+  {
+    icon: DollarSign,
+    title: "Cost Tracking",
+    description:
+      "See token usage and cost after every AI response. Per-message and per-session cost breakdowns.",
+    accent: "from-emerald-500/20 to-cyan-500/20",
+  },
+  {
     icon: Shield,
     title: "Agent SDK",
     description:
       "Built on the official Claude Agent SDK. Full tool-use: file read/write, command execution, code editing.",
-    accent: "from-teal-500/20 to-cyan-500/20",
-  },
-  {
-    icon: FileCode,
-    title: "Error Context",
-    description:
-      'Failed commands are captured. Type "a explain" and Claude analyzes the error with full context.',
-    accent: "from-cyan-500/20 to-emerald-500/20",
+    accent: "from-cyan-500/20 to-teal-500/20",
   },
   {
     icon: GitBranch,
     title: "Git Aware",
     description:
       "Powerline-style prompt shows branch, directory, and status. Claude understands your repo context.",
-    accent: "from-emerald-500/20 to-green-500/20",
+    accent: "from-teal-500/20 to-green-500/20",
+  },
+  {
+    icon: Settings,
+    title: "Per-Project Config",
+    description:
+      "Drop a .nesh.json in any project to override model, permissions, and AI prefix. Global + local config.",
+    accent: "from-green-500/20 to-emerald-500/20",
   },
   {
     icon: Command,
     title: "Fast Startup",
     description:
       "Agent SDK lazy-loaded on first AI command. Shell is instant \u2014 no waiting for model initialization.",
-    accent: "from-green-500/20 to-teal-500/20",
-  },
-  {
-    icon: Keyboard,
-    title: "Full Control",
-    description:
-      "Ctrl+C cancels streaming AI responses mid-flight. Ctrl+D exits. Arrow keys navigate history.",
-    accent: "from-teal-500/20 to-emerald-500/20",
-  },
-  {
-    icon: Layers,
-    title: "12 Modules",
-    description:
-      "~650 lines of TypeScript. Each module has a single responsibility. Clean, auditable, extensible.",
-    accent: "from-emerald-500/20 to-cyan-500/20",
+    accent: "from-emerald-500/20 to-teal-500/20",
   },
 ];
 
