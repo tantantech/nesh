@@ -24,30 +24,47 @@ Running AI-assisted commands feels as natural and fast as running normal shell c
 - ✓ npm global install (`npm install -g claudeshell`) — v1.0
 - ✓ Markdown rendering of AI responses — v1.0
 - ✓ Interactive prompt template selector (5 themes) — v1.0
+- ✓ AI session context across multiple `a` commands — v2.0
+- ✓ Fresh context slash command (`/new`) — v2.0
+- ✓ Model selection (Haiku/Sonnet/Opus) per query or session — v2.0
+- ✓ Pipe-friendly AI output (`cat log.txt | a summarize`) — v2.0
+- ✓ Automatic error recovery (diagnose + offer fix) — v2.0
+- ✓ Project context awareness (package.json, Cargo.toml, etc.) — v2.0
+- ✓ Permission control for AI file edits and command execution — v2.0
+- ✓ Token/cost display after each AI response — v2.0
+- ✓ Interactive command support via PTY (vim, ssh, less) — v2.0
+- ✓ Per-project configuration overrides — v2.0
+- ✓ Configurable AI command prefix — v2.0
+- ✓ Multi-provider support (15 providers) — v2.0
 
 ### Active
 
-- [ ] AI session context across multiple `a` commands
-- [ ] Fresh context slash command
-- [ ] Model selection (Haiku/Sonnet/Opus) per query or session
-- [ ] Pipe-friendly AI output (`cat log.txt | a summarize`)
-- [ ] Automatic error recovery (diagnose + offer fix)
-- [ ] Project context awareness (package.json, Cargo.toml, etc.)
-- [ ] Permission control for AI file edits and command execution
-- [ ] Token/cost display after each AI response
-- [ ] Interactive command support via PTY (vim, ssh, less)
-- [ ] Per-project configuration overrides
-- [ ] Configurable AI command prefix
+- [ ] Plugin framework engine with loader, lifecycle, enable/disable
+- [ ] All ~300 oh-my-zsh plugins ported to TypeScript
+- [ ] Profile system (core, developer, devops, cloud, ai-engineer)
+- [ ] Plugin install/update from git repos
+- [ ] Native auto-suggestions and syntax highlighting
+- [ ] Plugin management CLI and interactive UI
+- [ ] Per-plugin and per-project plugin configuration
+- [ ] Cross-platform plugin design (no zsh dependency)
 
-## Current Milestone: v2.0 Sessions & Power Features
+## Current Milestone: v3.0 Oh-My-Nesh Plugin Ecosystem
 
-**Goal:** Make ClaudeShell a power-user tool with persistent AI context, pipe-friendly output, and smart error recovery.
+**Goal:** Make Nesh a full oh-my-zsh replacement by building a native TypeScript plugin framework with all ~300 OMZ plugins ported, organized into user profiles, and cross-platform.
+
+**Target features:**
+- Plugin framework engine (loader, lifecycle, enable/disable, dependency resolution)
+- All ~300 oh-my-zsh plugins ported to TypeScript
+- Built-in profile system (core, developer, devops, cloud, ai-engineer)
+- Plugin install/update from git repos
+- Native TypeScript re-implementations of complex plugins (auto-suggestions, syntax highlighting)
+- Plugin management CLI and interactive UI
+- Plugin configuration per-plugin and per-project
+- Cross-platform design (no zsh dependency)
 
 ### Out of Scope
 
-- Full zsh/bash compatibility (plugin systems, oh-my-zsh themes) — too complex, delegate to system shell
 - GUI or TUI with panels/splits — terminal-native shell, not a terminal emulator
-- Multi-model support (GPT, Gemini, etc.) — Claude-first, SDK tools are the differentiator
 - Cloud sync of history/config — local-first for simplicity
 
 ## Context
@@ -75,6 +92,10 @@ Running AI-assisted commands feels as natural and fast as running normal shell c
 | TypeScript implementation | Matches Claude Code SDK language, rich ecosystem | ✓ Good |
 | Claude Code SDK over raw API | Full tool-use, file access, command execution built-in | ✓ Good |
 | Shell replacement vs wrapper | Start as wrapper (launched from zsh/bash), can evolve | ✓ Good |
+| OMZ plugins in TypeScript (not zsh subprocess) | Cross-platform, no dual-shell, future Windows support | — Pending |
+| Reverse "OMZ out of scope" decision | Plugin ecosystem is now core differentiator for v3.0 | — Pending |
+| Bundled + git installable plugins | Core plugins ship built-in, long tail from git repos | — Pending |
+| Profile-based defaults | Users pick a profile (dev, devops, cloud, ai) instead of configuring 300 plugins | — Pending |
 
 ## Evolution
 
@@ -94,4 +115,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-02 after milestone v2.0 start*
+*Last updated: 2026-04-03 after milestone v3.0 start*
