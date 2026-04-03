@@ -1,4 +1,4 @@
-export type BuiltinName = 'cd' | 'exit' | 'quit' | 'clear' | 'export' | 'theme' | 'model' | 'keys'
+export type BuiltinName = 'cd' | 'exit' | 'quit' | 'clear' | 'export' | 'theme' | 'model' | 'keys' | 'settings'
 
 export type InputAction =
   | { readonly type: 'builtin'; readonly name: BuiltinName; readonly args: string }

@@ -7,6 +7,7 @@ import { classifyInput } from './classify.js'
 import { executeCd, executeExport, executeTheme } from './builtins.js'
 import { executeModelSwitcher } from './model-switcher.js'
 import { executeKeyManager } from './key-manager.js'
+import { executeSettings } from './settings.js'
 import { executeCommand } from './passthrough.js'
 import { executeAI, buildFixPrompt, parseFixResponse } from './ai.js'
 import { createRenderer, renderCostFooter } from './renderer.js'
@@ -155,6 +156,24 @@ export async function runShell(): Promise<void> {
             }
             case 'keys': {
               await executeKeyManager(rl)
+              break
+            }
+            case 'settings': {
+              const settingsResult = await executeSettings(rl, state.currentModel)
+              if (settingsResult.templateName) {
+                currentTemplate = settingsResult.templateName
+                saveConfig({ ...loadConfig(), prompt_template: settingsResult.templateName })
+                process.stdout.write(`Theme set to: ${settingsResult.templateName}\n`)
+              }
+              if (settingsResult.model) {
+                state = { ...state, currentModel: settingsResult.model }
+              }
+              if (settingsResult.prefix) {
+                prefix = settingsResult.prefix
+              }
+              if (settingsResult.permissions) {
+                state = { ...state, permissionMode: settingsResult.permissions }
+              }
               break
             }
             case 'exit':
