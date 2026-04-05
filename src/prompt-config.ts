@@ -51,6 +51,35 @@ export const DEFAULT_SEGMENTS: readonly SegmentName[] = [
   'exit-code',
 ]
 
+export interface ColorScheme {
+  readonly name: string
+  readonly label: string
+  readonly description: string
+  readonly primary: number
+  readonly primaryDark: number
+  readonly accent: number
+  readonly git: number
+  readonly info: number
+  readonly error: number
+  readonly promptChar: string
+}
+
+export const COLOR_SCHEMES: readonly ColorScheme[] = [
+  { name: 'default', label: 'Default', description: 'Orange powerline (nesh signature)', primary: 208, primaryDark: 166, accent: 75, git: 114, info: 245, error: 203, promptChar: '\u276F' },
+  { name: 'ocean', label: 'Ocean', description: 'Cool blues and teals', primary: 33, primaryDark: 25, accent: 81, git: 114, info: 245, error: 203, promptChar: '\u276F' },
+  { name: 'forest', label: 'Forest', description: 'Deep greens and earthy tones', primary: 34, primaryDark: 28, accent: 150, git: 114, info: 245, error: 167, promptChar: '\u276F' },
+  { name: 'sunset', label: 'Sunset', description: 'Warm reds, oranges, and purples', primary: 196, primaryDark: 161, accent: 213, git: 221, info: 245, error: 203, promptChar: '\u276F' },
+  { name: 'mono', label: 'Mono', description: 'Elegant grayscale', primary: 250, primaryDark: 240, accent: 255, git: 248, info: 245, error: 203, promptChar: '\u276F' },
+  { name: 'nord', label: 'Nord', description: 'Arctic blue palette inspired by Nord theme', primary: 67, primaryDark: 60, accent: 110, git: 108, info: 245, error: 174, promptChar: '\u276F' },
+  { name: 'dracula', label: 'Dracula', description: 'Dark purple theme inspired by Dracula', primary: 141, primaryDark: 98, accent: 212, git: 84, info: 245, error: 203, promptChar: '\u276F' },
+]
+
+export const DEFAULT_COLOR_SCHEME = 'default'
+
+export function getColorSchemeByName(name: string): ColorScheme {
+  return COLOR_SCHEMES.find((s) => s.name === name) ?? COLOR_SCHEMES[0]
+}
+
 export const ALL_SEGMENTS: readonly SegmentName[] = [
   'shell-name',
   'dir',

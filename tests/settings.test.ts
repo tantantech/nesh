@@ -85,7 +85,7 @@ describe('executeSettings', () => {
   })
 
   it('delegates to executeTheme when selecting option 1', async () => {
-    vi.mocked(executeTheme).mockResolvedValue('powerline')
+    vi.mocked(executeTheme).mockResolvedValue({ templateName: 'powerline' })
     const rl = createMockRl(['1'])
     const result = await executeSettings(rl, undefined)
 

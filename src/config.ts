@@ -23,6 +23,7 @@ export interface NeshConfig {
   readonly plugins?: PluginConfig
   readonly prompt_segments?: readonly string[]
   readonly prompt_icon_mode?: 'nerd-font' | 'unicode' | 'ascii'
+  readonly prompt_color_scheme?: string
 }
 
 const VALID_PERMISSIONS = ['auto', 'ask', 'deny'] as const
@@ -98,6 +99,7 @@ export function loadConfig(): NeshConfig {
       ...(typeof obj.plugins === 'object' && obj.plugins !== null ? { plugins: validatePluginConfig(obj.plugins as Record<string, unknown>) } : {}),
       ...(Array.isArray(obj.prompt_segments) && obj.prompt_segments.every((x: unknown) => typeof x === 'string') ? { prompt_segments: obj.prompt_segments as readonly string[] } : {}),
       ...(typeof obj.prompt_icon_mode === 'string' && ['nerd-font', 'unicode', 'ascii'].includes(obj.prompt_icon_mode) ? { prompt_icon_mode: obj.prompt_icon_mode as 'nerd-font' | 'unicode' | 'ascii' } : {}),
+      ...(typeof obj.prompt_color_scheme === 'string' ? { prompt_color_scheme: obj.prompt_color_scheme } : {}),
     }
 
     return config

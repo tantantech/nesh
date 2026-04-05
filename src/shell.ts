@@ -186,11 +186,9 @@ export async function runShell(options?: { readonly safeMode?: boolean }): Promi
               process.stdout.write('\x1Bc')
               break
             case 'theme': {
-              const selected = await executeTheme(rl)
-              if (selected) {
-                currentTemplate = selected
-                saveConfig({ ...config, prompt_template: selected })
-                process.stdout.write(`Theme set to: ${selected}\n`)
+              const themeResult = await executeTheme(rl)
+              if (themeResult.templateName) {
+                currentTemplate = themeResult.templateName
               }
               break
             }
