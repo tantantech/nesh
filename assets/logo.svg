@@ -1,16 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#FF8C00"/>
-      <stop offset="100%" style="stop-color:#FF6200"/>
+      <stop offset="0%" style="stop-color:#064e3b"/>
+      <stop offset="100%" style="stop-color:#030806"/>
     </linearGradient>
-    <filter id="shadow">
-      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.2"/>
+    <filter id="glow">
+      <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#00ff41" flood-opacity="0.3"/>
     </filter>
   </defs>
-  <rect width="120" height="120" rx="24" fill="url(#bg)" filter="url(#shadow)"/>
+  <rect width="120" height="120" rx="24" fill="url(#bg)"/>
+  <!-- Border glow -->
+  <rect width="118" height="118" x="1" y="1" rx="23" fill="none" stroke="#00ff41" stroke-opacity="0.15" stroke-width="1"/>
   <!-- Terminal prompt arrow -->
-  <path d="M28 56 L48 70 L28 84" fill="none" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M28 56 L48 70 L28 84" fill="none" stroke="#00ff41" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
   <!-- Cursor line -->
-  <rect x="58" y="62" width="34" height="6" rx="3" fill="white" opacity="0.9"/>
+  <rect x="58" y="62" width="34" height="6" rx="3" fill="#00ff41" opacity="0.85" filter="url(#glow)"/>
 </svg>
