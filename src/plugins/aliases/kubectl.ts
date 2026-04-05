@@ -1,0 +1,32 @@
+import type { PluginManifest } from '../types.js'
+
+export const plugin: PluginManifest = {
+  name: "kubectl",
+  version: '1.0.0',
+  description: "kubectl aliases (ported from oh-my-zsh)",
+  aliases: {
+    "k": "kubectl",
+    "kaf": "kubectl apply -f",
+    "kgp": "kubectl get pods",
+    "kgs": "kubectl get svc",
+    "kgd": "kubectl get deployments",
+    "kdp": "kubectl describe pod",
+    "kds": "kubectl describe svc",
+    "kdd": "kubectl describe deployment",
+    "kl": "kubectl logs",
+    "klf": "kubectl logs -f",
+    "kex": "kubectl exec -it",
+    "kd": "kubectl delete",
+    "kdf": "kubectl delete -f",
+    "kgn": "kubectl get nodes",
+    "kgns": "kubectl get namespaces",
+    "kga": "kubectl get all",
+    "kgi": "kubectl get ingress",
+    "kcuc": "kubectl config use-context",
+    "kcgc": "kubectl config get-contexts",
+    "kgcm": "kubectl get configmaps",
+    "kgsec": "kubectl get secrets",
+    "krr": "kubectl rollout restart",
+    "krs": "kubectl rollout status",
+  },
+}
