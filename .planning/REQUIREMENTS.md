@@ -43,9 +43,9 @@
 
 ### Syntax Highlighting
 
-- [ ] **HLGT-01**: Real-time input coloring for commands, strings, flags, and paths
-- [ ] **HLGT-02**: Highlighting uses output-only rendering — `rl.line` always remains plain text
-- [ ] **HLGT-03**: Debounced rendering with frame budget (<16ms) to prevent typing lag
+- [x] **HLGT-01**: Real-time input coloring for commands, strings, flags, and paths
+- [x] **HLGT-02**: Highlighting uses output-only rendering — `rl.line` always remains plain text
+- [x] **HLGT-03**: Debounced rendering with frame budget (<16ms) to prevent typing lag
 - [x] **HLGT-04**: Syntax highlighting independently disablable in config
 
 ### Plugin Management
@@ -145,9 +145,9 @@
 | SUGG-03 | Phase 10 | Complete |
 | SUGG-04 | Phase 10 | Complete |
 | SUGG-05 | Phase 10 | Complete |
-| HLGT-01 | Phase 11 | Pending |
-| HLGT-02 | Phase 11 | Pending |
-| HLGT-03 | Phase 11 | Pending |
+| HLGT-01 | Phase 11 | Complete |
+| HLGT-02 | Phase 11 | Complete |
+| HLGT-03 | Phase 11 | Complete |
 | HLGT-04 | Phase 11 | Complete |
 | MGMT-01 | Phase 11 | Pending |
 | MGMT-02 | Phase 11 | Pending |
