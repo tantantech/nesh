@@ -100,10 +100,17 @@ export function getExitCode(code: number): string | undefined {
   return String(code)
 }
 
-export function getClock(): string {
+export function getClock(format: 'none' | '12h' | '24h' = '24h'): string | undefined {
+  if (format === 'none') return undefined
   const now = new Date()
-  const hours = String(now.getHours()).padStart(2, '0')
   const minutes = String(now.getMinutes()).padStart(2, '0')
+  if (format === '12h') {
+    const h = now.getHours()
+    const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h
+    const ampm = h < 12 ? 'AM' : 'PM'
+    return `${hour12}:${minutes} ${ampm}`
+  }
+  const hours = String(now.getHours()).padStart(2, '0')
   return `${hours}:${minutes}`
 }
 

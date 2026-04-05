@@ -125,7 +125,21 @@ describe('getExitCode', () => {
 })
 
 describe('getClock', () => {
-  it('returns HH:MM format', () => {
+  it('returns HH:MM format in 24h mode', () => {
+    const result = getClock('24h')
+    expect(result).toMatch(/^\d{2}:\d{2}$/)
+  })
+
+  it('returns 12h format with AM/PM', () => {
+    const result = getClock('12h')
+    expect(result).toMatch(/^\d{1,2}:\d{2} (AM|PM)$/)
+  })
+
+  it('returns undefined for none', () => {
+    expect(getClock('none')).toBeUndefined()
+  })
+
+  it('defaults to 24h when called without args', () => {
     const result = getClock()
     expect(result).toMatch(/^\d{2}:\d{2}$/)
   })
