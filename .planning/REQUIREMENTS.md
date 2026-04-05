@@ -36,10 +36,10 @@
 ### Auto-Suggestions
 
 - [ ] **SUGG-01**: Fish-like ghost text appears from history as user types, accepted with right-arrow
-- [ ] **SUGG-02**: Suggestion engine searches history with reverse linear scan and early exit
+- [x] **SUGG-02**: Suggestion engine searches history with reverse linear scan and early exit
 - [ ] **SUGG-03**: Keypress handler debounced to prevent typing lag (>5 chars/sec feels instant)
-- [ ] **SUGG-04**: History filtering excludes commands containing sensitive patterns (API keys, passwords, tokens)
-- [ ] **SUGG-05**: Auto-suggestions independently disablable in config
+- [x] **SUGG-04**: History filtering excludes commands containing sensitive patterns (API keys, passwords, tokens)
+- [x] **SUGG-05**: Auto-suggestions independently disablable in config
 
 ### Syntax Highlighting
 
@@ -141,10 +141,10 @@
 | COMP-04 | Phase 9 | Complete |
 | COMP-05 | Phase 9 | Complete |
 | SUGG-01 | Phase 10 | Pending |
-| SUGG-02 | Phase 10 | Pending |
+| SUGG-02 | Phase 10 | Complete |
 | SUGG-03 | Phase 10 | Pending |
-| SUGG-04 | Phase 10 | Pending |
-| SUGG-05 | Phase 10 | Pending |
+| SUGG-04 | Phase 10 | Complete |
+| SUGG-05 | Phase 10 | Complete |
 | HLGT-01 | Phase 11 | Pending |
 | HLGT-02 | Phase 11 | Pending |
 | HLGT-03 | Phase 11 | Pending |
