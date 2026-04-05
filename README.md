@@ -17,7 +17,6 @@
 
 <p align="center">
   <a href="https://www.npmjs.com/package/nesh"><img src="https://img.shields.io/npm/v/nesh?style=flat-square&color=00ff41&labelColor=0a0f0d&label=npm" alt="npm version" /></a>
-  <a href="https://www.npmjs.com/package/nesh"><img src="https://img.shields.io/npm/dm/nesh?style=flat-square&color=10b981&labelColor=0a0f0d" alt="downloads" /></a>
   <a href="https://github.com/tantantech/nesh/actions"><img src="https://img.shields.io/github/actions/workflow/status/tantantech/nesh/release.yml?style=flat-square&label=build&labelColor=0a0f0d" alt="build" /></a>
   <a href="https://nesh.sh"><img src="https://img.shields.io/badge/docs-nesh.sh-00ff41?style=flat-square&labelColor=0a0f0d" alt="docs" /></a>
   <a href="https://github.com/tantantech/nesh/blob/main/LICENSE"><img src="https://img.shields.io/github/license/tantantech/nesh?style=flat-square&labelColor=0a0f0d&color=6ee7b7" alt="license" /></a>
