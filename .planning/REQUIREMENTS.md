@@ -70,7 +70,7 @@
 - [x] **PORT-02**: Alias-only plugins (~120) ported as pure data objects (no init function needed)
 - [x] **PORT-03**: Completion-dependent plugins (~100) ported using Fig-style completion specs
 - [x] **PORT-04**: Environment/utility plugins (~40) ported with cross-platform TypeScript implementations
-- [ ] **PORT-05**: Hook/widget plugins (~30) ported using Nesh hook system and keypress API
+- [x] **PORT-05**: Hook/widget plugins (~30) ported using Nesh hook system and keypress API
 - [x] **PORT-06**: Platform annotations in manifest for platform-specific plugins (brew=macOS, apt=Linux)
 
 ### Migration & Discovery
@@ -163,7 +163,7 @@
 | PORT-02 | Phase 8 | Complete |
 | PORT-03 | Phase 9 | Complete |
 | PORT-04 | Phase 9 | Complete |
-| PORT-05 | Phase 12 | Pending |
+| PORT-05 | Phase 12 | Complete |
 | PORT-06 | Phase 11 | Complete |
 | MIG-01 | Phase 12 | Complete |
 | MIG-02 | Phase 12 | Complete |
