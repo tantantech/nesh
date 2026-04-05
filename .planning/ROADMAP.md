@@ -224,11 +224,11 @@ Plans:
   2. User with an existing oh-my-zsh installation can run migration detection and see which of their OMZ plugins have Nesh equivalents, with enable suggestions
   3. User can describe what they need in natural language (e.g., "I work with kubernetes and terraform") and AI suggests relevant plugins from the catalog
   4. Plugin themes integrate with Nesh's existing prompt template system via the segment registration API
-**Plans:** 5 plans
+**Plans:** 1/5 plans executed
 
 Plans:
 - [ ] 12-01-PLAN.md — Plugin catalog data file and batch alias plugin generation
-- [ ] 12-02-PLAN.md — Prompt segment registration API and template integration
+- [x] 12-02-PLAN.md — Prompt segment registration API and template integration
 - [ ] 12-03-PLAN.md — Hook plugins and lazy-loading plugin index refactor
 - [ ] 12-04-PLAN.md — OMZ migration detector and AI-enhanced plugin discovery
 - [ ] 12-05-PLAN.md — Shell integration: CLI wiring, startup refactor, profile updates
@@ -251,4 +251,4 @@ Phases execute in numeric order: 8 -> 9 -> 10 -> 11 -> 12
 | 9. Completion Engine & Utility Plugins | v3.0 | 0/3 | Planned | - |
 | 10. Auto-Suggestions & History Search | v3.0 | 2/2 | Complete    | 2026-04-05 |
 | 11. Syntax Highlighting, Profiles & Plugin Management | v3.0 | 5/5 | Complete    | 2026-04-05 |
-| 12. Batch Port, Migration & Discovery | v3.0 | 0/5 | Planned | - |
+| 12. Batch Port, Migration & Discovery | v3.0 | 1/5 | In Progress|  |
