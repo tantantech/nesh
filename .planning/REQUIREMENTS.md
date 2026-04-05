@@ -8,9 +8,9 @@
 ### Plugin Framework
 
 - [ ] **PLUG-01**: Plugin loader initializes enabled plugins at shell startup with two-phase loading (sync alias data <50ms, async init deferred after first prompt)
-- [ ] **PLUG-02**: Plugin registry provides O(1) lookup for aliases, completions, hooks, and commands
+- [x] **PLUG-02**: Plugin registry provides O(1) lookup for aliases, completions, hooks, and commands
 - [ ] **PLUG-03**: Every plugin lifecycle call (init, destroy) runs inside error boundaries — a crashing plugin never crashes the shell
-- [ ] **PLUG-04**: Plugin manifest declares metadata (name, version, description, dependencies, platform, permissions)
+- [x] **PLUG-04**: Plugin manifest declares metadata (name, version, description, dependencies, platform, permissions)
 - [ ] **PLUG-05**: Plugin dependency resolution with topological sort and cycle detection
 - [ ] **PLUG-06**: Shell startup with 30+ enabled plugins completes in under 300ms
 - [ ] **PLUG-07**: Safe mode (`nesh --safe`) starts with zero plugins for recovery
@@ -18,11 +18,11 @@
 
 ### Alias System
 
-- [ ] **ALIAS-01**: Plugins register aliases that expand in the command pipeline before passthrough
-- [ ] **ALIAS-02**: Alias expansion uses expand-once rule with depth limit to prevent infinite loops
-- [ ] **ALIAS-03**: User aliases always override plugin aliases
-- [ ] **ALIAS-04**: Collision detection warns when multiple plugins define the same alias
-- [ ] **ALIAS-05**: User can disable specific aliases per-plugin in config
+- [x] **ALIAS-01**: Plugins register aliases that expand in the command pipeline before passthrough
+- [x] **ALIAS-02**: Alias expansion uses expand-once rule with depth limit to prevent infinite loops
+- [x] **ALIAS-03**: User aliases always override plugin aliases
+- [x] **ALIAS-04**: Collision detection warns when multiple plugins define the same alias
+- [x] **ALIAS-05**: User can disable specific aliases per-plugin in config
 - [ ] **ALIAS-06**: `nesh aliases` command lists all aliases with their source plugin
 
 ### Completion Engine
@@ -122,18 +122,18 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | PLUG-01 | Phase 8 | Pending |
-| PLUG-02 | Phase 8 | Pending |
+| PLUG-02 | Phase 8 | Complete |
 | PLUG-03 | Phase 8 | Pending |
-| PLUG-04 | Phase 8 | Pending |
+| PLUG-04 | Phase 8 | Complete |
 | PLUG-05 | Phase 8 | Pending |
 | PLUG-06 | Phase 8 | Pending |
 | PLUG-07 | Phase 8 | Pending |
 | PLUG-08 | Phase 8 | Pending |
-| ALIAS-01 | Phase 8 | Pending |
-| ALIAS-02 | Phase 8 | Pending |
-| ALIAS-03 | Phase 8 | Pending |
-| ALIAS-04 | Phase 8 | Pending |
-| ALIAS-05 | Phase 8 | Pending |
+| ALIAS-01 | Phase 8 | Complete |
+| ALIAS-02 | Phase 8 | Complete |
+| ALIAS-03 | Phase 8 | Complete |
+| ALIAS-04 | Phase 8 | Complete |
+| ALIAS-05 | Phase 8 | Complete |
 | ALIAS-06 | Phase 8 | Pending |
 | COMP-01 | Phase 9 | Pending |
 | COMP-02 | Phase 9 | Pending |

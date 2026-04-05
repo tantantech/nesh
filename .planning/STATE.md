@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Sessions & Power Features
-status: planning
-stopped_at: Phase 8 context gathered
-last_updated: "2026-04-05T07:05:14.576Z"
-last_activity: 2026-04-03 — Roadmap created for v3.0 (Phases 8-12)
+status: executing
+stopped_at: Completed 08-01-PLAN.md
+last_updated: "2026-04-05T07:45:29.717Z"
+last_activity: 2026-04-05
 progress:
   total_phases: 5
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_plans: 3
+  completed_plans: 1
   percent: 70
 ---
 
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-03)
 
 **Core value:** Running AI-assisted commands feels as natural and fast as running normal shell commands
-**Current focus:** Phase 8 - Plugin Engine & Alias System
+**Current focus:** Phase 08 — plugin-engine-alias-system
 
 ## Current Position
 
-Phase: 8 of 12 (Plugin Engine & Alias System)
-Plan: 0 of ? in current phase
-Status: Ready to plan
-Last activity: 2026-04-03 — Roadmap created for v3.0 (Phases 8-12)
+Phase: 08 (plugin-engine-alias-system) — EXECUTING
+Plan: 2 of 3
+Status: Ready to execute
+Last activity: 2026-04-05
 
 Progress: [██████████████░░░░░░] 70% (v1.0 + v2.0 complete, v3.0 0/5 phases)
 
@@ -55,6 +55,7 @@ Progress: [██████████████░░░░░░] 70% (v1
 - Trend: Stable
 
 *Updated after each plan completion*
+| Phase 08 P01 | 2min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -70,6 +71,7 @@ Recent decisions affecting current work:
 - [v3.0]: rl.line must ALWAYS remain plain text (output-only rendering for highlighting/suggestions)
 - [v3.0]: All plugin config uses interactive selection menus (like theme/model builtins)
 - [v3.0]: Error boundaries on ALL plugin lifecycle calls from Phase 8
+- [Phase 08]: User aliases silently override plugin aliases; plugin collisions warn and last-loaded wins
 
 ### Pending Todos
 
@@ -92,6 +94,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-05T07:05:14.573Z
-Stopped at: Phase 8 context gathered
-Resume file: .planning/phases/08-plugin-engine-alias-system/08-CONTEXT.md
+Last session: 2026-04-05T07:45:29.715Z
+Stopped at: Completed 08-01-PLAN.md
+Resume file: None
