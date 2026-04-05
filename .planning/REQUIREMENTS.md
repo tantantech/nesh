@@ -28,9 +28,9 @@
 ### Completion Engine
 
 - [ ] **COMP-01**: Context-aware Tab completion dispatches to plugin-provided completion providers
-- [ ] **COMP-02**: Completion providers are async with 1-second timeout and caching
-- [ ] **COMP-03**: Fig-style declarative completion specs supported for command grammar definitions
-- [ ] **COMP-04**: Fallback to bash/zsh `compgen` when no native completion is available
+- [x] **COMP-02**: Completion providers are async with 1-second timeout and caching
+- [x] **COMP-03**: Fig-style declarative completion specs supported for command grammar definitions
+- [x] **COMP-04**: Fallback to bash/zsh `compgen` when no native completion is available
 - [ ] **COMP-05**: Top 20 commands have hand-crafted completions (git, docker, npm, kubectl, ssh, aws, etc.)
 
 ### Auto-Suggestions
@@ -136,9 +136,9 @@
 | ALIAS-05 | Phase 8 | Complete |
 | ALIAS-06 | Phase 8 | Complete |
 | COMP-01 | Phase 9 | Pending |
-| COMP-02 | Phase 9 | Pending |
-| COMP-03 | Phase 9 | Pending |
-| COMP-04 | Phase 9 | Pending |
+| COMP-02 | Phase 9 | Complete |
+| COMP-03 | Phase 9 | Complete |
+| COMP-04 | Phase 9 | Complete |
 | COMP-05 | Phase 9 | Pending |
 | SUGG-01 | Phase 10 | Pending |
 | SUGG-02 | Phase 10 | Pending |

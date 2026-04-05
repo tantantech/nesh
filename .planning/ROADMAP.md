@@ -176,7 +176,7 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 09-01-PLAN.md — Completion types, TTL cache, compgen fallback, and Fig-style spec parser
+- [x] 09-01-PLAN.md — Completion types, TTL cache, compgen fallback, and Fig-style spec parser
 - [ ] 09-02-PLAN.md — Completion engine dispatcher, plugin manifest extension, and shell.ts wiring
 - [ ] 09-03-PLAN.md — Top 20 command completion specs and utility plugin ports
 
