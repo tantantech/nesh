@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Sessions & Power Features
 status: executing
-stopped_at: Completed 11-01-PLAN.md
-last_updated: "2026-04-05T16:32:41.442Z"
+stopped_at: Completed 11-04-PLAN.md
+last_updated: "2026-04-05T17:02:29.566Z"
 last_activity: 2026-04-05
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 13
-  completed_plans: 10
+  completed_plans: 11
   percent: 70
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-03)
 ## Current Position
 
 Phase: 11 (syntax-highlighting-profiles-plugin-management) — EXECUTING
-Plan: 3 of 5
+Plan: 4 of 5
 Status: Ready to execute
 Last activity: 2026-04-05
 
@@ -65,6 +65,7 @@ Progress: [██████████████░░░░░░] 70% (v1
 | Phase 10 P02 | 3min | 2 tasks | 4 files |
 | Phase 11 P02 | 2min | 2 tasks | 6 files |
 | Phase 11 P01 | 4min | 2 tasks | 5 files |
+| Phase 11 P04 | 3min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -94,6 +95,8 @@ Recent decisions affecting current work:
 - [Phase 11]: Profiles use depth-first extends resolution with Set-based deduplication
 - [Phase 11]: External plugin loader uses pathToFileURL with cache busting for hot-reload
 - [Phase 11]: Raw ANSI codes instead of picocolors for TTY-only renderer (always-on colors)
+- [Phase 11]: spawnAsync helper wraps child_process.spawn in Promise for git operations
+- [Phase 11]: Hot-reload uses setImmediate fire-and-forget for Phase 2 async init
 
 ### Pending Todos
 
@@ -119,6 +122,6 @@ None yet.
 ## Session Continuity
 
 Last activity: 2026-04-05 - Completed quick task 260405-j9w: Add full p10k-style configuration wizard
-Last session: 2026-04-05T16:32:41.440Z
-Stopped at: Completed 11-01-PLAN.md
+Last session: 2026-04-05T17:02:29.563Z
+Stopped at: Completed 11-04-PLAN.md
 Resume file: None
