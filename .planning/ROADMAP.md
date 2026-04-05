@@ -173,7 +173,12 @@ Plans:
   3. User can install a plugin that provides Fig-style declarative completion specs, and those specs drive Tab behavior for that command
   4. When no native completion is available, Tab falls back to bash/zsh compgen so the user always gets some completion
   5. Utility plugins work cross-platform: extract handles common archives, sudo toggle prepends sudo with a keystroke, copypath copies the current path
-**Plans**: TBD
+**Plans:** 3 plans
+
+Plans:
+- [ ] 09-01-PLAN.md — Completion types, TTL cache, compgen fallback, and Fig-style spec parser
+- [ ] 09-02-PLAN.md — Completion engine dispatcher, plugin manifest extension, and shell.ts wiring
+- [ ] 09-03-PLAN.md — Top 20 command completion specs and utility plugin ports
 
 ### Phase 10: Auto-Suggestions & History Search
 **Goal**: Users see fish-like ghost text suggestions from history as they type, accepted with right-arrow
@@ -225,7 +230,7 @@ Phases execute in numeric order: 8 -> 9 -> 10 -> 11 -> 12
 | 6. Context & Permissions | v2.0 | 3/3 | Complete | - |
 | 7. PTY & Polish | v2.0 | 2/2 | Complete | 2026-04-02 |
 | 8. Plugin Engine & Alias System | v3.0 | 0/3 | Planned | - |
-| 9. Completion Engine & Utility Plugins | v3.0 | 0/? | Not started | - |
+| 9. Completion Engine & Utility Plugins | v3.0 | 0/3 | Planned | - |
 | 10. Auto-Suggestions & History Search | v3.0 | 0/? | Not started | - |
 | 11. Syntax Highlighting, Profiles & Plugin Management | v3.0 | 0/? | Not started | - |
 | 12. Batch Port, Migration & Discovery | v3.0 | 0/? | Not started | - |
