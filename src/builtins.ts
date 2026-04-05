@@ -1,7 +1,9 @@
 import * as path from 'node:path'
 import * as os from 'node:os'
 import * as readline from 'node:readline/promises'
+import pc from 'picocolors'
 import type { CdState } from './types.js'
+import type { PluginRegistry } from './plugins/registry.js'
 import { TEMPLATES, buildPromptFromTemplate } from './templates.js'
 import { abbreviatePath, getGitBranch } from './prompt.js'
 
@@ -77,4 +79,40 @@ export async function executeTheme(rl: readline.Interface): Promise<string | und
   }
 
   return TEMPLATES[num - 1].name
+}
+
+export function executeAliases(registry: PluginRegistry): void {
+  const allAliases = registry.getAll()
+  if (allAliases.size === 0) {
+    process.stdout.write('No aliases configured.\n')
+    return
+  }
+
+  // Group by source
+  const grouped = new Map<string, Array<{ alias: string; expansion: string }>>()
+  for (const [alias, entry] of allAliases) {
+    const list = grouped.get(entry.source) ?? []
+    list.push({ alias, expansion: entry.expansion })
+    grouped.set(entry.source, [...list])
+  }
+
+  // Print user aliases first, then plugins alphabetically
+  const userAliases = grouped.get('user')
+  if (userAliases) {
+    process.stdout.write(`\n${pc.bold('User aliases')}\n`)
+    for (const { alias, expansion } of userAliases.sort((a, b) => a.alias.localeCompare(b.alias))) {
+      process.stdout.write(`  ${alias} ${pc.dim('->')} ${expansion}\n`)
+    }
+    grouped.delete('user')
+  }
+
+  const sortedPlugins = [...grouped.keys()].sort()
+  for (const pluginName of sortedPlugins) {
+    const aliases = grouped.get(pluginName)!
+    process.stdout.write(`\n${pc.dim(`[${pluginName}]`)} ${pc.bold(pluginName)}\n`)
+    for (const { alias, expansion } of aliases.sort((a, b) => a.alias.localeCompare(b.alias))) {
+      process.stdout.write(`  ${alias} ${pc.dim('->')} ${expansion}\n`)
+    }
+  }
+  process.stdout.write('\n')
 }

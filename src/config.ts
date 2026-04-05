@@ -9,6 +9,8 @@ export interface ProviderKeys {
   readonly [key: string]: string | undefined
 }
 
+import type { PluginConfig } from './plugins/types.js'
+
 export interface NeshConfig {
   readonly api_key?: string
   readonly model?: string
@@ -18,6 +20,7 @@ export interface NeshConfig {
   readonly permissions?: 'auto' | 'ask' | 'deny'
   readonly interactive_commands?: readonly string[]
   readonly keys?: ProviderKeys
+  readonly plugins?: PluginConfig
 }
 
 const VALID_PERMISSIONS = ['auto', 'ask', 'deny'] as const
@@ -48,6 +51,28 @@ export const CONFIG_PATH = path.join(CONFIG_DIR, 'config.json')
 
 const DEFAULTS: NeshConfig = { history_size: 1000 }
 
+export function validatePluginConfig(obj: Record<string, unknown>): PluginConfig {
+  const result: Record<string, unknown> = {}
+  if (Array.isArray(obj.enabled) && obj.enabled.every((x: unknown) => typeof x === 'string')) {
+    result.enabled = obj.enabled as readonly string[]
+  }
+  if (typeof obj.aliases === 'object' && obj.aliases !== null) {
+    const aliases = obj.aliases as Record<string, unknown>
+    const valid: Record<string, string> = {}
+    for (const [k, v] of Object.entries(aliases)) {
+      if (typeof v === 'string') valid[k] = v
+    }
+    if (Object.keys(valid).length > 0) result.aliases = valid
+  }
+  // Pass through per-plugin config objects (e.g., { "git": { "disabled_aliases": [...] } })
+  for (const [key, value] of Object.entries(obj)) {
+    if (key !== 'enabled' && key !== 'aliases' && typeof value === 'object' && value !== null) {
+      result[key] = value
+    }
+  }
+  return result as PluginConfig
+}
+
 export function loadConfig(): NeshConfig {
   try {
     const raw = fs.readFileSync(CONFIG_PATH, 'utf-8')
@@ -68,6 +93,7 @@ export function loadConfig(): NeshConfig {
       ...(validatePermissions(obj.permissions) !== undefined ? { permissions: validatePermissions(obj.permissions) } : {}),
       ...(Array.isArray(obj.interactive_commands) && obj.interactive_commands.every((x: unknown) => typeof x === 'string') ? { interactive_commands: obj.interactive_commands as readonly string[] } : {}),
       ...(validateKeys(obj.keys) ? { keys: obj.keys as ProviderKeys } : {}),
+      ...(typeof obj.plugins === 'object' && obj.plugins !== null ? { plugins: validatePluginConfig(obj.plugins as Record<string, unknown>) } : {}),
     }
 
     return config
