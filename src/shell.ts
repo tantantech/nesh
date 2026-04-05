@@ -167,7 +167,8 @@ export async function runShell(options?: { readonly safeMode?: boolean }): Promi
   }
 
   // First-run profile detection (D-14): show profile selector when no plugins configured
-  if (!safeMode) {
+  // Skip in non-TTY mode (piped input) since interactive selection requires a terminal
+  if (!safeMode && process.stdout.isTTY) {
     const hasPluginConfig = (() => {
       try {
         fs.accessSync(CONFIG_PATH)
