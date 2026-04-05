@@ -24,6 +24,7 @@ import { dispatchHook, buildHookBus } from './plugins/hooks.js'
 import { BUNDLED_PLUGINS } from './plugins/index.js'
 import { createEmptyRegistry } from './plugins/registry.js'
 import { createCompletionEngine } from './completions/engine.js'
+import { setupAutoSuggestions } from './suggestions/index.js'
 import type { NeshConfig } from './config.js'
 import type { ProjectContext } from './context.js'
 import type { PluginRegistry } from './plugins/registry.js'
@@ -84,6 +85,8 @@ export async function runShell(options?: { readonly safeMode?: boolean }): Promi
     },
   })
 
+  const suggestionsCleanup = setupAutoSuggestions(rl, config)
+
   let state: ShellState = {
     cdState: { previousDir: undefined },
     running: true,
@@ -103,6 +106,7 @@ export async function runShell(options?: { readonly safeMode?: boolean }): Promi
   let lastHistoryLine: string | undefined
 
   const cleanup = () => {
+    suggestionsCleanup()
     try { rl.close() } catch { /* already closed */ }
   }
 
