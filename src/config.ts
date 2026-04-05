@@ -24,6 +24,14 @@ export interface NeshConfig {
   readonly prompt_segments?: readonly string[]
   readonly prompt_icon_mode?: 'nerd-font' | 'unicode' | 'ascii'
   readonly prompt_color_scheme?: string
+  readonly prompt_separator_style?: 'angled' | 'vertical' | 'slanted' | 'round'
+  readonly prompt_head_style?: 'sharp' | 'blurred' | 'slanted' | 'round'
+  readonly prompt_height?: 'one-line' | 'two-line'
+  readonly prompt_spacing?: 'compact' | 'sparse'
+  readonly prompt_icon_density?: 'few' | 'many'
+  readonly prompt_flow?: 'concise' | 'fluent'
+  readonly prompt_transient?: boolean
+  readonly prompt_time_format?: 'none' | '12h' | '24h'
 }
 
 const VALID_PERMISSIONS = ['auto', 'ask', 'deny'] as const
@@ -100,6 +108,14 @@ export function loadConfig(): NeshConfig {
       ...(Array.isArray(obj.prompt_segments) && obj.prompt_segments.every((x: unknown) => typeof x === 'string') ? { prompt_segments: obj.prompt_segments as readonly string[] } : {}),
       ...(typeof obj.prompt_icon_mode === 'string' && ['nerd-font', 'unicode', 'ascii'].includes(obj.prompt_icon_mode) ? { prompt_icon_mode: obj.prompt_icon_mode as 'nerd-font' | 'unicode' | 'ascii' } : {}),
       ...(typeof obj.prompt_color_scheme === 'string' ? { prompt_color_scheme: obj.prompt_color_scheme } : {}),
+      ...(typeof obj.prompt_separator_style === 'string' && ['angled', 'vertical', 'slanted', 'round'].includes(obj.prompt_separator_style) ? { prompt_separator_style: obj.prompt_separator_style as 'angled' | 'vertical' | 'slanted' | 'round' } : {}),
+      ...(typeof obj.prompt_head_style === 'string' && ['sharp', 'blurred', 'slanted', 'round'].includes(obj.prompt_head_style) ? { prompt_head_style: obj.prompt_head_style as 'sharp' | 'blurred' | 'slanted' | 'round' } : {}),
+      ...(typeof obj.prompt_height === 'string' && ['one-line', 'two-line'].includes(obj.prompt_height) ? { prompt_height: obj.prompt_height as 'one-line' | 'two-line' } : {}),
+      ...(typeof obj.prompt_spacing === 'string' && ['compact', 'sparse'].includes(obj.prompt_spacing) ? { prompt_spacing: obj.prompt_spacing as 'compact' | 'sparse' } : {}),
+      ...(typeof obj.prompt_icon_density === 'string' && ['few', 'many'].includes(obj.prompt_icon_density) ? { prompt_icon_density: obj.prompt_icon_density as 'few' | 'many' } : {}),
+      ...(typeof obj.prompt_flow === 'string' && ['concise', 'fluent'].includes(obj.prompt_flow) ? { prompt_flow: obj.prompt_flow as 'concise' | 'fluent' } : {}),
+      ...(typeof obj.prompt_transient === 'boolean' ? { prompt_transient: obj.prompt_transient } : {}),
+      ...(typeof obj.prompt_time_format === 'string' && ['none', '12h', '24h'].includes(obj.prompt_time_format) ? { prompt_time_format: obj.prompt_time_format as 'none' | '12h' | '24h' } : {}),
     }
 
     return config

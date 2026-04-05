@@ -42,6 +42,44 @@ export function getSeparator(mode: IconMode): SeparatorSet {
   return SEPARATOR_MAP[mode]
 }
 
+export const SEPARATOR_STYLES: Readonly<Record<string, SeparatorSet>> = {
+  angled:   { right: '\uE0B0', rightThin: '\uE0B1' },
+  vertical: { right: '\u2502', rightThin: '\u2502' },
+  slanted:  { right: '\uE0BC', rightThin: '\uE0BD' },
+  round:    { right: '\uE0B4', rightThin: '\uE0B5' },
+}
+
+export interface HeadStyleSet {
+  readonly left: string
+  readonly right: string
+}
+
+export const HEAD_STYLES: Readonly<Record<string, HeadStyleSet>> = {
+  sharp:   { left: '', right: '' },
+  blurred: { left: '\uE0C0', right: '\uE0C0' },
+  slanted: { left: '\uE0BC', right: '\uE0BA' },
+  round:   { left: '\uE0B6', right: '\uE0B4' },
+}
+
+export function getSeparatorStyle(name: string): SeparatorSet {
+  return SEPARATOR_STYLES[name] ?? SEPARATOR_STYLES.angled
+}
+
+export interface WizardConfig {
+  readonly iconMode: IconMode
+  readonly template: string
+  readonly colorScheme: string
+  readonly separatorStyle: string
+  readonly headStyle: string
+  readonly height: string
+  readonly spacing: string
+  readonly iconDensity: string
+  readonly flow: string
+  readonly transient: boolean
+  readonly timeFormat: string
+  readonly segments: readonly string[]
+}
+
 export const DEFAULT_SEGMENTS: readonly SegmentName[] = [
   'shell-name',
   'dir',
