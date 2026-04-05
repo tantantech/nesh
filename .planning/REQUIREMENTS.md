@@ -1,121 +1,179 @@
-# Requirements: ClaudeShell v2.0
+# Requirements: Nesh v3.0
 
-**Defined:** 2026-04-02
+**Defined:** 2026-04-05
 **Core Value:** Running AI-assisted commands feels as natural and fast as running normal shell commands
 
-## v2.0 Requirements
+## v3.0 Requirements
 
-### Sessions & Chat Mode
+### Plugin Framework
 
-- [x] **SESS-01**: AI remembers context across multiple `a` commands in the same session (conversation continues)
-- [x] **SESS-02**: User can type `/new` to start a fresh AI context without restarting the shell
-- [x] **SESS-03**: User can select AI model per query (`a --haiku`, `a --opus`) or set default in config
-- [x] **SESS-04**: User can enter "chat mode" by typing `a` with no prompt — enters a continuous conversation with Claude where every line goes to AI until user types `/exit` or `/shell` to return
-- [x] **SESS-05**: Chat mode and shell mode transitions are instant (no delay, no context loss)
-- [x] **SESS-06**: Chat mode shows a distinct prompt (e.g., `ai >`) so user always knows which mode they're in
+- [ ] **PLUG-01**: Plugin loader initializes enabled plugins at shell startup with two-phase loading (sync alias data <50ms, async init deferred after first prompt)
+- [ ] **PLUG-02**: Plugin registry provides O(1) lookup for aliases, completions, hooks, and commands
+- [ ] **PLUG-03**: Every plugin lifecycle call (init, destroy) runs inside error boundaries — a crashing plugin never crashes the shell
+- [ ] **PLUG-04**: Plugin manifest declares metadata (name, version, description, dependencies, platform, permissions)
+- [ ] **PLUG-05**: Plugin dependency resolution with topological sort and cycle detection
+- [ ] **PLUG-06**: Shell startup with 30+ enabled plugins completes in under 300ms
+- [ ] **PLUG-07**: Safe mode (`nesh --safe`) starts with zero plugins for recovery
+- [ ] **PLUG-08**: Plugin hook system dispatches REPL lifecycle events (preCommand, postCommand, prePrompt, onCd)
 
-### Pipe & Unix Integration
+### Alias System
 
-- [x] **PIPE-01**: User can pipe input to AI (`cat log.txt | a summarize`) — stdin is passed as context
-- [x] **PIPE-02**: When stdout is piped, AI output is plain text without colors or markdown formatting
-- [x] **PIPE-03**: User can chain AI output into other commands (`a generate csv | head -5`)
+- [ ] **ALIAS-01**: Plugins register aliases that expand in the command pipeline before passthrough
+- [ ] **ALIAS-02**: Alias expansion uses expand-once rule with depth limit to prevent infinite loops
+- [ ] **ALIAS-03**: User aliases always override plugin aliases
+- [ ] **ALIAS-04**: Collision detection warns when multiple plugins define the same alias
+- [ ] **ALIAS-05**: User can disable specific aliases per-plugin in config
+- [ ] **ALIAS-06**: `nesh aliases` command lists all aliases with their source plugin
 
-### Error Recovery
+### Completion Engine
 
-- [x] **ERR-04**: When a command fails, AI automatically offers a suggested fix (not just explain — actionable fix)
-- [x] **ERR-05**: User can type `a fix` to let AI attempt to fix the last failed command automatically
+- [ ] **COMP-01**: Context-aware Tab completion dispatches to plugin-provided completion providers
+- [ ] **COMP-02**: Completion providers are async with 1-second timeout and caching
+- [ ] **COMP-03**: Fig-style declarative completion specs supported for command grammar definitions
+- [ ] **COMP-04**: Fallback to bash/zsh `compgen` when no native completion is available
+- [ ] **COMP-05**: Top 20 commands have hand-crafted completions (git, docker, npm, kubectl, ssh, aws, etc.)
 
-### Project Context
+### Auto-Suggestions
 
-- [x] **CTX-01**: Shell detects project type from markers (package.json, Cargo.toml, go.mod, etc.) and includes project context in AI system prompt
-- [x] **CTX-02**: User can place a `.claudeshell.json` in any directory for per-project config overrides (model, prefix, permissions)
+- [ ] **SUGG-01**: Fish-like ghost text appears from history as user types, accepted with right-arrow
+- [ ] **SUGG-02**: Suggestion engine searches history with reverse linear scan and early exit
+- [ ] **SUGG-03**: Keypress handler debounced to prevent typing lag (>5 chars/sec feels instant)
+- [ ] **SUGG-04**: History filtering excludes commands containing sensitive patterns (API keys, passwords, tokens)
+- [ ] **SUGG-05**: Auto-suggestions independently disablable in config
 
-### Permission Control
+### Syntax Highlighting
 
-- [x] **PERM-01**: User can configure permission mode (auto-approve, ask-each-time, or deny-all) for AI file edits
-- [x] **PERM-02**: When permission mode is "ask", user sees what Claude wants to do and can approve/deny inline
-- [x] **PERM-03**: Permission mode is configurable globally and per-project
+- [ ] **HLGT-01**: Real-time input coloring for commands, strings, flags, and paths
+- [ ] **HLGT-02**: Highlighting uses output-only rendering — `rl.line` always remains plain text
+- [ ] **HLGT-03**: Debounced rendering with frame budget (<16ms) to prevent typing lag
+- [ ] **HLGT-04**: Syntax highlighting independently disablable in config
 
-### Visibility & Cost
+### Plugin Management
 
-- [x] **VIS-01**: After each AI response, show token count and estimated cost
-- [x] **VIS-02**: In chat mode, show cumulative session cost
+- [ ] **MGMT-01**: `plugin` builtin command with subcommands: list, enable, disable, install, update, remove, search, doctor, times
+- [ ] **MGMT-02**: Install plugins from git repos (`plugin install zsh-users/zsh-autosuggestions`) stored in ~/.nesh/plugins/
+- [ ] **MGMT-03**: Plugin search across bundled catalog and popular community plugins
+- [ ] **MGMT-04**: `plugin doctor` shows failed plugins, load times, and recommendations
+- [ ] **MGMT-05**: All plugin configuration uses interactive selection menus (like existing `theme` and `model` builtins)
+- [ ] **MGMT-06**: No shell restart required after enable/disable/install — hot-reload in current session
 
-### Interactive Commands
+### Profile System
 
-- [x] **PTY-01**: Interactive commands (vim, ssh, less, htop) work correctly via PTY passthrough
-- [x] **PTY-02**: Shell prompt restores cleanly after interactive command exits
+- [ ] **PROF-01**: Curated plugin profiles: core, developer, devops, cloud, ai-engineer
+- [ ] **PROF-02**: Interactive profile selector at first run or via `plugin profile` command
+- [ ] **PROF-03**: Profiles are additive — enabling "devops" adds to "core", not replaces
+- [ ] **PROF-04**: Users can customize profiles after selection (add/remove individual plugins)
 
-### Configuration
+### Plugin Catalog (OMZ Port)
 
-- [x] **CFG-01**: User can configure a custom AI command prefix (not just `a`) via config
-- [x] **CFG-02**: Per-project `.claudeshell.json` overrides global config when present
+- [ ] **PORT-01**: All ~300 oh-my-zsh plugins ported to TypeScript with matching user-facing behavior
+- [ ] **PORT-02**: Alias-only plugins (~120) ported as pure data objects (no init function needed)
+- [ ] **PORT-03**: Completion-dependent plugins (~100) ported using Fig-style completion specs
+- [ ] **PORT-04**: Environment/utility plugins (~40) ported with cross-platform TypeScript implementations
+- [ ] **PORT-05**: Hook/widget plugins (~30) ported using Nesh hook system and keypress API
+- [ ] **PORT-06**: Platform annotations in manifest for platform-specific plugins (brew=macOS, apt=Linux)
+
+### Migration & Discovery
+
+- [ ] **MIG-01**: Auto-detect existing oh-my-zsh installation and show which plugins have Nesh equivalents
+- [ ] **MIG-02**: AI-enhanced plugin discovery — user describes what they want, AI suggests relevant plugins
+- [ ] **MIG-03**: Plugin themes integrate with Nesh's existing prompt template system via segment registration API
+
+## v2.0 Validated
+
+- ✓ SESS-01 through SESS-06: Sessions, chat mode, model selection — v2.0
+- ✓ PIPE-01 through PIPE-03: Pipe-friendly AI, stdin context — v2.0
+- ✓ ERR-04, ERR-05: Auto error recovery, `a fix` command — v2.0
+- ✓ CTX-01, CTX-02: Project context detection, per-project config — v2.0
+- ✓ PERM-01 through PERM-03: Permission control (auto/ask/deny) — v2.0
+- ✓ VIS-01, VIS-02: Token/cost display — v2.0
+- ✓ PTY-01, PTY-02: Interactive command PTY passthrough — v2.0
+- ✓ CFG-01, CFG-02: Custom prefix, per-project config — v2.0
 
 ## v1.0 Validated
 
 - ✓ SHELL-01 through SHELL-09: Interactive REPL, passthrough, cd, pipes, signals, history — v1.0
 - ✓ AI-01 through AI-07: Claude Agent SDK streaming, tool visibility, markdown rendering — v1.0
-- ✓ CONF-01, CONF-02, CONF-03: API key config, error messages, config file — v1.0
-- ✓ ERR-01, ERR-02, ERR-03: Error explanation, SDK errors, crash resilience — v1.0
-- ✓ PLAT-01, PLAT-02, PLAT-03: macOS, Linux, npm install — v1.0
+- ✓ CONF-01 through CONF-03: API key config, error messages, config file — v1.0
+- ✓ ERR-01 through ERR-03: Error explanation, SDK errors, crash resilience — v1.0
+- ✓ PLAT-01 through PLAT-03: macOS, Linux, npm install — v1.0
 
 ## Future Requirements
 
-### Advanced Sessions
+### Advanced Ecosystem
 
-- **ADV-01**: Session history browser (list past sessions, resume old ones)
-- **ADV-02**: Session export/sharing (save conversation to file)
-- **ADV-03**: Multi-model conversations within a session
-
-### Ecosystem
-
-- **ECO-01**: Tab completion for `a` commands using AI
-- **ECO-02**: Shell plugin system for custom commands
-- **ECO-03**: Integration with git hooks
+- **ADV-01**: Plugin marketplace with ratings and reviews
+- **ADV-02**: Plugin authoring CLI (`nesh plugin init` scaffolding)
+- **ADV-03**: Windows platform support for all plugins
+- **ADV-04**: Plugin telemetry (opt-in usage stats for popularity ranking)
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Full bash/zsh compatibility | Delegate to system shell |
-| GUI or TUI with panels | Terminal-native, inline only |
-| Multi-provider support (GPT, Gemini) | Claude-first, SDK is the differentiator |
-| Cloud sync | Local-first for privacy |
-| Autonomous agent mode | AI suggests, user approves |
-| Team collaboration | Single-user tool |
+| In-process JavaScript sandboxing (vm/vm2) | Fundamentally insecure — use process-level isolation for untrusted plugins |
+| Running actual zsh plugin scripts via subprocess | Creates dual-shell dependency, breaks cross-platform goal |
+| Plugin marketplace with server infrastructure | Too complex for v3.0 — git repos sufficient |
+| Windows support for this milestone | macOS/Linux focus — platform annotations allow future Windows port |
+| GUI plugin manager | Terminal-native interactive menus only |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SESS-01 | Phase 4 | Complete |
-| SESS-02 | Phase 4 | Complete |
-| SESS-03 | Phase 4 | Complete |
-| SESS-04 | Phase 4 | Complete |
-| SESS-05 | Phase 4 | Complete |
-| SESS-06 | Phase 4 | Complete |
-| PIPE-01 | Phase 5 | Complete |
-| PIPE-02 | Phase 5 | Complete |
-| PIPE-03 | Phase 5 | Complete |
-| ERR-04 | Phase 5 | Complete |
-| ERR-05 | Phase 5 | Complete |
-| CTX-01 | Phase 6 | Complete |
-| CTX-02 | Phase 6 | Complete |
-| PERM-01 | Phase 6 | Complete |
-| PERM-02 | Phase 6 | Complete |
-| PERM-03 | Phase 6 | Complete |
-| VIS-01 | Phase 4 | Complete |
-| VIS-02 | Phase 4 | Complete |
-| PTY-01 | Phase 7 | Complete |
-| PTY-02 | Phase 7 | Complete |
-| CFG-01 | Phase 5 | Complete |
-| CFG-02 | Phase 6 | Complete |
+| PLUG-01 | TBD | Pending |
+| PLUG-02 | TBD | Pending |
+| PLUG-03 | TBD | Pending |
+| PLUG-04 | TBD | Pending |
+| PLUG-05 | TBD | Pending |
+| PLUG-06 | TBD | Pending |
+| PLUG-07 | TBD | Pending |
+| PLUG-08 | TBD | Pending |
+| ALIAS-01 | TBD | Pending |
+| ALIAS-02 | TBD | Pending |
+| ALIAS-03 | TBD | Pending |
+| ALIAS-04 | TBD | Pending |
+| ALIAS-05 | TBD | Pending |
+| ALIAS-06 | TBD | Pending |
+| COMP-01 | TBD | Pending |
+| COMP-02 | TBD | Pending |
+| COMP-03 | TBD | Pending |
+| COMP-04 | TBD | Pending |
+| COMP-05 | TBD | Pending |
+| SUGG-01 | TBD | Pending |
+| SUGG-02 | TBD | Pending |
+| SUGG-03 | TBD | Pending |
+| SUGG-04 | TBD | Pending |
+| SUGG-05 | TBD | Pending |
+| HLGT-01 | TBD | Pending |
+| HLGT-02 | TBD | Pending |
+| HLGT-03 | TBD | Pending |
+| HLGT-04 | TBD | Pending |
+| MGMT-01 | TBD | Pending |
+| MGMT-02 | TBD | Pending |
+| MGMT-03 | TBD | Pending |
+| MGMT-04 | TBD | Pending |
+| MGMT-05 | TBD | Pending |
+| MGMT-06 | TBD | Pending |
+| PROF-01 | TBD | Pending |
+| PROF-02 | TBD | Pending |
+| PROF-03 | TBD | Pending |
+| PROF-04 | TBD | Pending |
+| PORT-01 | TBD | Pending |
+| PORT-02 | TBD | Pending |
+| PORT-03 | TBD | Pending |
+| PORT-04 | TBD | Pending |
+| PORT-05 | TBD | Pending |
+| PORT-06 | TBD | Pending |
+| MIG-01 | TBD | Pending |
+| MIG-02 | TBD | Pending |
+| MIG-03 | TBD | Pending |
 
 **Coverage:**
-- v2.0 requirements: 22 total
-- Mapped to phases: 22
-- Unmapped: 0
+- v3.0 requirements: 42 total
+- Mapped to phases: 0 (awaiting roadmap)
+- Unmapped: 42
 
 ---
-*Requirements defined: 2026-04-02*
-*Last updated: 2026-03-31 after v2.0 roadmap creation*
+*Requirements defined: 2026-04-05*
+*Last updated: 2026-04-05 after initial definition*
