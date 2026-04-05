@@ -75,8 +75,8 @@
 
 ### Migration & Discovery
 
-- [ ] **MIG-01**: Auto-detect existing oh-my-zsh installation and show which plugins have Nesh equivalents
-- [ ] **MIG-02**: AI-enhanced plugin discovery — user describes what they want, AI suggests relevant plugins
+- [x] **MIG-01**: Auto-detect existing oh-my-zsh installation and show which plugins have Nesh equivalents
+- [x] **MIG-02**: AI-enhanced plugin discovery — user describes what they want, AI suggests relevant plugins
 - [x] **MIG-03**: Plugin themes integrate with Nesh's existing prompt template system via segment registration API
 
 ## v2.0 Validated
@@ -165,8 +165,8 @@
 | PORT-04 | Phase 9 | Complete |
 | PORT-05 | Phase 12 | Pending |
 | PORT-06 | Phase 11 | Complete |
-| MIG-01 | Phase 12 | Pending |
-| MIG-02 | Phase 12 | Pending |
+| MIG-01 | Phase 12 | Complete |
+| MIG-02 | Phase 12 | Complete |
 | MIG-03 | Phase 12 | Complete |
 
 **Coverage:**
