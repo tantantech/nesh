@@ -1,6 +1,7 @@
 import { abbreviatePath, getGitBranch } from './prompt.js'
 import { getGitStatus, getClock, getNodeVersion, getPythonVenv } from './segments.js'
 import { getIcon, getSeparatorStyle, getColorSchemeByName, DEFAULT_SEGMENTS } from './prompt-config.js'
+import { interpolateSegments } from './segment-registry.js'
 import type { IconMode, ColorScheme, SeparatorSet } from './prompt-config.js'
 import { loadConfig } from './config.js'
 import type { NeshConfig } from './config.js'
@@ -364,7 +365,7 @@ export function getTemplateByName(name: string): PromptTemplate | undefined {
 export function buildPromptFromTemplate(template: PromptTemplate, cwd: string, homedir: string): string {
   const builder = builders[template.name]
   if (!builder) {
-    return builders.minimal(cwd, homedir)
+    return interpolateSegments(builders.minimal(cwd, homedir))
   }
-  return builder(cwd, homedir)
+  return interpolateSegments(builder(cwd, homedir))
 }
