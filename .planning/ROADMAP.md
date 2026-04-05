@@ -140,7 +140,7 @@ Plans:
 
 - [ ] **Phase 8: Plugin Engine & Alias System** - Core plugin framework with loader, registry, hooks, error boundaries, and alias expansion proven with git plugin
 - [ ] **Phase 9: Completion Engine & Utility Plugins** - Tab completion framework with Fig-style specs, bash fallback, and top-20 command completions plus utility plugin ports
-- [ ] **Phase 10: Auto-Suggestions & History Search** - Fish-like ghost text from history with keypress engine, debounce, and sensitive pattern filtering
+- [x] **Phase 10: Auto-Suggestions & History Search** - Fish-like ghost text from history with keypress engine, debounce, and sensitive pattern filtering (completed 2026-04-05)
 - [ ] **Phase 11: Syntax Highlighting, Profiles & Plugin Management** - Real-time input coloring, curated plugin profiles, full plugin CLI with git install and interactive menus
 - [ ] **Phase 12: Batch Port, Migration & Discovery** - Remaining ~250 plugin ports, OMZ migration detector, AI-enhanced plugin discovery, and theme integration
 
@@ -189,11 +189,11 @@ Plans:
   2. Typing at normal speed (>5 chars/sec) feels instant with no visible lag -- keypress handling is debounced appropriately
   3. Suggestions never expose commands containing API keys, passwords, or tokens -- sensitive patterns are filtered from history search
   4. User can independently disable auto-suggestions in config without affecting other features
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
 - [x] 10-01-PLAN.md — History search with sensitive filtering, ghost text renderer, and config extension
-- [ ] 10-02-PLAN.md — Keypress handler with debounce, facade module, and shell.ts integration
+- [x] 10-02-PLAN.md — Keypress handler with debounce, facade module, and shell.ts integration
 
 ### Phase 11: Syntax Highlighting, Profiles & Plugin Management
 **Goal**: Users see real-time colored input as they type, can select a curated plugin profile at first run, and manage plugins through an interactive CLI
@@ -235,6 +235,6 @@ Phases execute in numeric order: 8 -> 9 -> 10 -> 11 -> 12
 | 7. PTY & Polish | v2.0 | 2/2 | Complete | 2026-04-02 |
 | 8. Plugin Engine & Alias System | v3.0 | 0/3 | Planned | - |
 | 9. Completion Engine & Utility Plugins | v3.0 | 0/3 | Planned | - |
-| 10. Auto-Suggestions & History Search | v3.0 | 1/2 | In Progress|  |
+| 10. Auto-Suggestions & History Search | v3.0 | 2/2 | Complete   | 2026-04-05 |
 | 11. Syntax Highlighting, Profiles & Plugin Management | v3.0 | 0/? | Not started | - |
 | 12. Batch Port, Migration & Discovery | v3.0 | 0/? | Not started | - |
