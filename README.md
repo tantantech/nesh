@@ -261,21 +261,6 @@ cli.ts ──▸ shell.ts ──▸ classify.ts ─┬─▸ builtins.ts
 
 ---
 
-## Comparison
-
-| | Nesh | ChatGPT / Claude.ai | GitHub Copilot CLI | Warp AI |
-|---|:---:|:---:|:---:|:---:|
-| Runs in your terminal | :white_check_mark: | :x: | :white_check_mark: | :white_check_mark: |
-| Full file read/write | :white_check_mark: | :x: | :x: | :x: |
-| Runs commands for you | :white_check_mark: | :x: | :x: | :x: |
-| 30+ model choices | :white_check_mark: | :x: | :x: | :x: |
-| Unix pipes | :white_check_mark: | :x: | :white_check_mark: | :x: |
-| Local models (Ollama) | :white_check_mark: | :x: | :x: | :x: |
-| Open source | :white_check_mark: | :x: | :x: | :x: |
-| Cost tracking | :white_check_mark: | :x: | :x: | :x: |
-
----
-
 ## Development
 
 ```bash
