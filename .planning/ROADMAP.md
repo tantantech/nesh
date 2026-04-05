@@ -205,7 +205,14 @@ Plans:
   3. User can run `plugin install user/repo` to install from git, `plugin enable/disable` to toggle, `plugin search` to find, and `plugin doctor` to diagnose -- all without restarting the shell (hot-reload)
   4. All plugin configuration uses interactive selection menus consistent with existing `theme` and `model` builtins
   5. Syntax highlighting is independently disablable in config; rendering stays within a 16ms frame budget to prevent typing lag
-**Plans**: TBD
+**Plans:** 5 plans
+
+Plans:
+- [ ] 11-01-PLAN.md — Syntax highlighting tokenizer, command cache, and ANSI renderer
+- [ ] 11-02-PLAN.md — Profile definitions, external plugin loader, platform filter, highlighting config
+- [ ] 11-03-PLAN.md — Plugin management CLI core subcommands
+- [ ] 11-04-PLAN.md — Git plugin install/update/remove and hot-reload
+- [ ] 11-05-PLAN.md — Shell integration: wiring highlighting, first-run profile, plugin builtin
 **UI hint**: yes
 
 ### Phase 12: Batch Port, Migration & Discovery
@@ -217,7 +224,14 @@ Plans:
   2. User with an existing oh-my-zsh installation can run migration detection and see which of their OMZ plugins have Nesh equivalents, with enable suggestions
   3. User can describe what they need in natural language (e.g., "I work with kubernetes and terraform") and AI suggests relevant plugins from the catalog
   4. Plugin themes integrate with Nesh's existing prompt template system via the segment registration API
-**Plans**: TBD
+**Plans:** 5 plans
+
+Plans:
+- [ ] 11-01-PLAN.md — Syntax highlighting tokenizer, command cache, and ANSI renderer
+- [ ] 11-02-PLAN.md — Profile definitions, external plugin loader, platform filter, highlighting config
+- [ ] 11-03-PLAN.md — Plugin management CLI core subcommands
+- [ ] 11-04-PLAN.md — Git plugin install/update/remove and hot-reload
+- [ ] 11-05-PLAN.md — Shell integration: wiring highlighting, first-run profile, plugin builtin
 
 ## Progress
 
@@ -236,5 +250,5 @@ Phases execute in numeric order: 8 -> 9 -> 10 -> 11 -> 12
 | 8. Plugin Engine & Alias System | v3.0 | 0/3 | Planned | - |
 | 9. Completion Engine & Utility Plugins | v3.0 | 0/3 | Planned | - |
 | 10. Auto-Suggestions & History Search | v3.0 | 2/2 | Complete    | 2026-04-05 |
-| 11. Syntax Highlighting, Profiles & Plugin Management | v3.0 | 0/? | Not started | - |
+| 11. Syntax Highlighting, Profiles & Plugin Management | v3.0 | 0/5 | Planned | - |
 | 12. Batch Port, Migration & Discovery | v3.0 | 0/? | Not started | - |
