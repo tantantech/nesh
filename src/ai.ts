@@ -34,11 +34,12 @@ interface SDKMessage {
   readonly parent_tool_use_id?: string | null
 }
 
-function classifyError(error: unknown): string {
+function classifyError(error: unknown, providerName?: string): string {
   if (error instanceof Error) {
     const msg = error.message.toLowerCase()
-    if (msg.includes('api key') || msg.includes('authentication')) {
-      return 'Invalid API key -- check ANTHROPIC_API_KEY'
+    if (msg.includes('api key') || msg.includes('authentication') || msg.includes('not configured')) {
+      const provider = providerName ?? 'anthropic'
+      return `API key error (${provider}) -- ${error.message}`
     }
     if (msg.includes('rate limit')) {
       return 'Rate limited -- wait a moment and try again'
@@ -47,7 +48,7 @@ function classifyError(error: unknown): string {
       return 'Network error -- check your connection'
     }
     if (msg.includes('billing')) {
-      return 'Billing error -- check your Anthropic account'
+      return 'Billing error -- check your account'
     }
     return `AI error: ${error.message}`
   }
@@ -213,10 +214,8 @@ export async function executeAI(
   // If model string is set but not recognized, check if it matches a provider name
   // (e.g., user set "minimax" in config instead of "minimax-m2.7")
   if (options.model && !modelInfo) {
-    const { PROVIDER_CONFIGS } = await import('./providers/registry.js')
+    const { PROVIDER_CONFIGS, MODEL_REGISTRY } = await import('./providers/registry.js')
     if (PROVIDER_CONFIGS[options.model] && options.model !== 'claude') {
-      // Find the first model for this provider
-      const { MODEL_REGISTRY } = await import('./providers/registry.js')
       const firstMatch = Object.values(MODEL_REGISTRY).find(e => e.provider === options.model)
       if (firstMatch) {
         return executeProviderAI(prompt, options, {
@@ -397,7 +396,7 @@ async function executeProviderAI(
     if (isAbortError(error) || abortController.signal.aborted) {
       return emptyResult
     }
-    callbacks.onError(classifyError(error))
+    callbacks.onError(classifyError(error, modelInfo.providerName))
     return emptyResult
   }
 }
