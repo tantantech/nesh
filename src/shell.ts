@@ -303,6 +303,7 @@ export async function runShell(options?: { readonly safeMode?: boolean; readonly
               const selectedModel = await executeModelSwitcher(rl, state.currentModel)
               if (selectedModel) {
                 state = { ...state, currentModel: selectedModel }
+                saveConfig({ ...loadConfig(), model: selectedModel })
               }
               break
             }
@@ -319,6 +320,7 @@ export async function runShell(options?: { readonly safeMode?: boolean; readonly
               }
               if (settingsResult.model) {
                 state = { ...state, currentModel: settingsResult.model }
+                saveConfig({ ...loadConfig(), model: settingsResult.model })
               }
               if (settingsResult.prefix) {
                 prefix = settingsResult.prefix
