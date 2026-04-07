@@ -28,6 +28,8 @@ import { setupAutoSuggestions } from './suggestions/index.js'
 import { renderHighlighted } from './highlighting/renderer.js'
 import { refreshCommandCache, isKnownCommand, addKnownCommands } from './highlighting/commands.js'
 import { executePlugin } from './plugin-manager.js'
+import { isFirstRun, runOnboarding } from './onboarding.js'
+import { expandProfile } from './plugins/profiles.js'
 import { CONFIG_PATH } from './config.js'
 import fs from 'node:fs'
 import type { NeshConfig } from './config.js'
@@ -50,6 +52,20 @@ function refreshProjectState(
 export async function runShell(options?: { readonly safeMode?: boolean; readonly migrateMode?: boolean }): Promise<void> {
   const safeMode = options?.safeMode ?? false
   const migrateMode = options?.migrateMode ?? false
+
+  // First-run onboarding wizard
+  if (isFirstRun() && process.stdin.isTTY) {
+    const onboardingRl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: true })
+    const result = await runOnboarding(onboardingRl)
+    onboardingRl.close()
+    // Apply profile selection — expand profile into enabled plugin list
+    if (result.profile && result.profile !== 'none') {
+      const profilePlugins = expandProfile(result.profile)
+      const cfg = loadConfig()
+      saveConfig({ ...cfg, plugins: { ...cfg.plugins, enabled: profilePlugins } })
+    }
+  }
+
   const globalConfig = loadConfig()
   const initialState = refreshProjectState(globalConfig, process.cwd())
   const config = initialState.mergedConfig
