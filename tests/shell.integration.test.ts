@@ -92,7 +92,7 @@ describe('Shell Integration', { timeout: 15_000 }, () => {
   // AI integration: 'a' command invokes AI (shows API key error when unset)
   it('a command shows API key error when ANTHROPIC_API_KEY is not set', async () => {
     const { stderr } = await runShell('a hello\nexit\n', {
-      env: { ANTHROPIC_API_KEY: '' },
+      env: { ...process.env, ANTHROPIC_API_KEY: '' },
     })
     expect(stderr).toContain('ANTHROPIC_API_KEY')
   })

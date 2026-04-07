@@ -239,7 +239,7 @@ export async function runShell(options?: { readonly safeMode?: boolean; readonly
       // Fire-and-forget: prePrompt hook (per D-26 -- no await)
       dispatchHook('prePrompt', hookBus.prePrompt, { cwd: process.cwd() })
       const line = await rl.question(prompt)
-      const expandedLine = expandAlias(line, pluginRegistry)
+      const expandedLine = expandAlias(line, pluginRegistry, prefix)
       const action = classifyInput(expandedLine, prefix)
 
       switch (action.type) {
