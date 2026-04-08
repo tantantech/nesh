@@ -255,9 +255,12 @@ export async function runShell(options?: { readonly safeMode?: boolean; readonly
       dispatchHook('prePrompt', hookBus.prePrompt, { cwd: process.cwd() })
       const line = await rl.question(prompt)
       // User aliases (from config) take priority over plugin aliases
+      // But never expand builtins or the AI prefix
       const userAliasMap = config.user_aliases ?? {}
       const firstWord = line.trim().split(/\s+/)[0] ?? ''
-      const userExpansion = userAliasMap[firstWord]
+      const isBuiltin = ['cd', 'exit', 'quit', 'clear', 'export', 'settings'].includes(firstWord)
+      const isPrefix = firstWord === prefix
+      const userExpansion = (!isBuiltin && !isPrefix) ? userAliasMap[firstWord] : undefined
       const expandedLine = userExpansion
         ? line.trim().replace(firstWord, userExpansion)
         : expandAlias(line, pluginRegistry, prefix)

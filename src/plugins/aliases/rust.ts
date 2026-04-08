@@ -16,7 +16,7 @@ export const plugin: PluginManifest = {
     "cn": "cargo new",
     "ca": "cargo add",
     "cu": "cargo update",
-    "cd": "cargo doc",
+    "cdoc": "cargo doc",
     "cdo": "cargo doc --open",
   },
 }
