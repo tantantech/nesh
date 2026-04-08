@@ -22,13 +22,13 @@ export interface Renderer {
 export function createRenderer(options: { readonly isTTY: boolean }): Renderer {
   const { isTTY } = options
   let buffer = ''
+  let hasOutput = false
 
   const onText = (text: string): void => {
-    if (isTTY) {
-      buffer += text
-    } else {
-      process.stdout.write(text)
-    }
+    // Stream text in real-time so users see responses as they arrive
+    process.stdout.write(text)
+    buffer += text
+    hasOutput = true
   }
 
   const onToolStart = (toolName: string): void => {
@@ -45,15 +45,10 @@ export function createRenderer(options: { readonly isTTY: boolean }): Renderer {
   }
 
   const finish = (): void => {
-    if (isTTY && buffer.length > 0) {
-      const marked = new Marked()
-      marked.use(markedTerminal())
-      const rendered = marked.parse(buffer) as string
-      process.stdout.write(rendered)
-      buffer = ''
-    } else {
+    if (hasOutput) {
       process.stdout.write('\n')
     }
+    buffer = ''
   }
 
   return { onText, onToolStart, onToolEnd, finish }
