@@ -44,17 +44,17 @@ describe('classifyInput', () => {
     })
   })
 
-  describe('builtin: plugin', () => {
-    it('classifies plugin list as builtin', () => {
-      expect(classifyInput('plugin list')).toEqual({ type: 'builtin', name: 'plugin', args: 'list' })
+  describe('plugin passthrough (no longer a builtin)', () => {
+    it('classifies plugin list as passthrough', () => {
+      expect(classifyInput('plugin list')).toEqual({ type: 'passthrough', command: 'plugin list' })
     })
 
-    it('classifies plugin with no args as builtin', () => {
-      expect(classifyInput('plugin')).toEqual({ type: 'builtin', name: 'plugin', args: '' })
+    it('classifies plugin with no args as passthrough', () => {
+      expect(classifyInput('plugin')).toEqual({ type: 'passthrough', command: 'plugin' })
     })
 
-    it('classifies plugin enable git as builtin', () => {
-      expect(classifyInput('plugin enable git')).toEqual({ type: 'builtin', name: 'plugin', args: 'enable git' })
+    it('classifies plugin enable git as passthrough', () => {
+      expect(classifyInput('plugin enable git')).toEqual({ type: 'passthrough', command: 'plugin enable git' })
     })
   })
 

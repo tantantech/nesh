@@ -2,8 +2,14 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import type * as readline from 'node:readline/promises'
 
 // Mock dependencies before importing
-vi.mock('../src/builtins.js', () => ({
-  executeTheme: vi.fn(),
+vi.mock('../src/wizard.js', () => ({
+  executeWizard: vi.fn(),
+}))
+vi.mock('../src/prompt-config.js', () => ({
+  executePromptConfig: vi.fn(),
+  COLOR_SCHEMES: [
+    { name: 'default', label: 'Default', description: 'Default colors' },
+  ],
 }))
 vi.mock('../src/model-switcher.js', () => ({
   executeModelSwitcher: vi.fn(),
@@ -11,17 +17,47 @@ vi.mock('../src/model-switcher.js', () => ({
 vi.mock('../src/key-manager.js', () => ({
   executeKeyManager: vi.fn(),
 }))
-vi.mock('../src/config.js', () => ({
-  loadConfig: vi.fn(() => ({
-    prefix: 'a',
-    permissions: 'ask',
-    history_size: 1000,
-  })),
-  saveConfig: vi.fn(),
+vi.mock('../src/config.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../src/config.js')>()
+  return {
+    ...actual,
+    CONFIG_DIR: '/mock/.nesh',
+    loadConfig: vi.fn(() => ({
+      prefix: 'a',
+      permissions: 'ask',
+      history_size: 1000,
+    })),
+    saveConfig: vi.fn(),
+  }
+})
+vi.mock('../src/templates.js', () => ({
+  TEMPLATES: [
+    { name: 'minimal', label: 'Minimal', description: 'Simple prompt', requiresNerdFont: false },
+  ],
 }))
+vi.mock('../src/plugins/index.js', () => ({
+  BUNDLED_PLUGINS: [],
+  PLUGIN_CATALOG_LIST: [],
+}))
+vi.mock('../src/plugins/profiles.js', () => ({
+  PROFILES: [],
+  expandProfile: vi.fn(),
+}))
+vi.mock('../src/plugin-install.js', () => ({
+  installPlugin: vi.fn(),
+  removePlugin: vi.fn(),
+}))
+vi.mock('../src/plugin-reload.js', () => ({
+  hotReload: vi.fn(),
+}))
+vi.mock('../src/menu.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../src/menu.js')>()
+  return {
+    ...actual,
+  }
+})
 
 import { executeSettings } from '../src/settings.js'
-import { executeTheme } from '../src/builtins.js'
 import { executeModelSwitcher } from '../src/model-switcher.js'
 import { executeKeyManager } from '../src/key-manager.js'
 import { loadConfig, saveConfig } from '../src/config.js'
@@ -54,66 +90,58 @@ describe('executeSettings', () => {
     })
   })
 
-  it('displays numbered menu with 6 options', async () => {
-    const rl = createMockRl([''])
-    await executeSettings(rl, undefined)
+  it('displays main menu with 4 categories', async () => {
+    // 'q' quits immediately
+    const rl = createMockRl(['q'])
+    await executeSettings(rl, {})
 
+    expect(stdoutOutput).toContain('Nesh Settings')
     expect(stdoutOutput).toContain('[1]')
     expect(stdoutOutput).toContain('[2]')
     expect(stdoutOutput).toContain('[3]')
     expect(stdoutOutput).toContain('[4]')
-    expect(stdoutOutput).toContain('[5]')
-    expect(stdoutOutput).toContain('[6]')
-    expect(stdoutOutput).toContain('Theme')
-    expect(stdoutOutput).toContain('Model')
-    expect(stdoutOutput).toContain('API Keys')
-    expect(stdoutOutput).toContain('Prefix')
-    expect(stdoutOutput).toContain('Permissions')
-    expect(stdoutOutput).toContain('History Size')
+    expect(stdoutOutput).toContain('Appearance')
+    expect(stdoutOutput).toContain('AI')
+    expect(stdoutOutput).toContain('Plugins')
+    expect(stdoutOutput).toContain('Shell')
   })
 
-  it('returns empty result on invalid input', async () => {
-    const rl = createMockRl(['abc'])
-    const result = await executeSettings(rl, undefined)
+  it('returns empty result on quit', async () => {
+    const rl = createMockRl(['q'])
+    const result = await executeSettings(rl, {})
     expect(result).toEqual({})
   })
 
-  it('returns empty result on empty input', async () => {
-    const rl = createMockRl([''])
-    const result = await executeSettings(rl, undefined)
+  it('returns empty result on empty input then quit', async () => {
+    const rl = createMockRl(['', 'q'])
+    const result = await executeSettings(rl, {})
     expect(result).toEqual({})
   })
 
-  it('delegates to executeTheme when selecting option 1', async () => {
-    vi.mocked(executeTheme).mockResolvedValue({ templateName: 'powerline' })
-    const rl = createMockRl(['1'])
-    const result = await executeSettings(rl, undefined)
-
-    expect(executeTheme).toHaveBeenCalledWith(rl)
-    expect(result).toEqual({ templateName: 'powerline' })
-  })
-
-  it('delegates to executeModelSwitcher when selecting option 2', async () => {
+  it('navigates into AI submenu and delegates model selection', async () => {
     vi.mocked(executeModelSwitcher).mockResolvedValue('claude-sonnet-4-5-20250514')
-    const rl = createMockRl(['2'])
-    const result = await executeSettings(rl, 'claude-haiku-4-5-20251001')
+    // Select [2] AI, then [1] Model, then q (exit AI), then q (exit main)
+    const rl = createMockRl(['2', '1', 'q', 'q'])
+    const result = await executeSettings(rl, { currentModel: 'claude-haiku-4-5-20251001' })
 
     expect(executeModelSwitcher).toHaveBeenCalledWith(rl, 'claude-haiku-4-5-20251001')
     expect(result).toEqual({ model: 'claude-sonnet-4-5-20250514' })
   })
 
-  it('delegates to executeKeyManager when selecting option 3', async () => {
+  it('navigates into AI submenu and delegates key manager', async () => {
     vi.mocked(executeKeyManager).mockResolvedValue(undefined)
-    const rl = createMockRl(['3'])
-    const result = await executeSettings(rl, undefined)
+    // Select [2] AI, then [2] API Keys, then q (exit AI), then q (exit main)
+    const rl = createMockRl(['2', '2', 'q', 'q'])
+    const result = await executeSettings(rl, {})
 
     expect(executeKeyManager).toHaveBeenCalledWith(rl)
     expect(result).toEqual({})
   })
 
-  it('prompts for prefix, validates no whitespace, and saves', async () => {
-    const rl = createMockRl(['4', 'hey'])
-    const result = await executeSettings(rl, undefined)
+  it('navigates into Shell submenu and updates prefix', async () => {
+    // Select [4] Shell, then [1] AI Prefix, type new prefix, then q (exit Shell), then q (exit main)
+    const rl = createMockRl(['4', '1', 'hey', 'q', 'q'])
+    const result = await executeSettings(rl, {})
 
     expect(vi.mocked(saveConfig)).toHaveBeenCalledWith(
       expect.objectContaining({ prefix: 'hey' })
@@ -121,42 +149,19 @@ describe('executeSettings', () => {
     expect(result).toEqual({ prefix: 'hey' })
   })
 
-  it('rejects prefix with whitespace', async () => {
-    const rl = createMockRl(['4', 'he y'])
-    const result = await executeSettings(rl, undefined)
+  it('rejects prefix with whitespace and returns empty', async () => {
+    // Select [4] Shell, then [1] AI Prefix, type invalid prefix, then q, then q
+    const rl = createMockRl(['4', '1', 'he y', 'q', 'q'])
+    const result = await executeSettings(rl, {})
 
     expect(vi.mocked(saveConfig)).not.toHaveBeenCalled()
     expect(result).toEqual({})
   })
 
-  it('shows permissions choices and saves selection', async () => {
-    const rl = createMockRl(['5', '1'])
-    const result = await executeSettings(rl, undefined)
-
-    expect(vi.mocked(saveConfig)).toHaveBeenCalledWith(
-      expect.objectContaining({ permissions: 'auto' })
-    )
-    expect(result).toEqual({ permissions: 'auto' })
-  })
-
-  it('shows permissions with current marked', async () => {
-    vi.mocked(loadConfig).mockReturnValue({
-      prefix: 'a',
-      permissions: 'deny',
-      history_size: 1000,
-    })
-    const rl = createMockRl(['5', ''])
-    await executeSettings(rl, undefined)
-
-    // Output should show the permissions menu
-    expect(stdoutOutput).toContain('auto')
-    expect(stdoutOutput).toContain('ask')
-    expect(stdoutOutput).toContain('deny')
-  })
-
-  it('prompts for history size, validates positive integer >= 100, and saves', async () => {
-    const rl = createMockRl(['6', '5000'])
-    const result = await executeSettings(rl, undefined)
+  it('navigates into Shell submenu and updates history size', async () => {
+    // Select [4] Shell, then [2] History Size, type 5000, then q, then q
+    const rl = createMockRl(['4', '2', '5000', 'q', 'q'])
+    const result = await executeSettings(rl, {})
 
     expect(vi.mocked(saveConfig)).toHaveBeenCalledWith(
       expect.objectContaining({ history_size: 5000 })
@@ -165,18 +170,31 @@ describe('executeSettings', () => {
   })
 
   it('rejects history size below 100', async () => {
-    const rl = createMockRl(['6', '50'])
-    const result = await executeSettings(rl, undefined)
+    // Select [4] Shell, then [2] History Size, type 50, then q, then q
+    const rl = createMockRl(['4', '2', '50', 'q', 'q'])
+    const result = await executeSettings(rl, {})
 
     expect(vi.mocked(saveConfig)).not.toHaveBeenCalled()
     expect(result).toEqual({})
   })
 
   it('rejects non-numeric history size', async () => {
-    const rl = createMockRl(['6', 'abc'])
-    const result = await executeSettings(rl, undefined)
+    // Select [4] Shell, then [2] History Size, type abc, then q, then q
+    const rl = createMockRl(['4', '2', 'abc', 'q', 'q'])
+    const result = await executeSettings(rl, {})
 
     expect(vi.mocked(saveConfig)).not.toHaveBeenCalled()
     expect(result).toEqual({})
+  })
+
+  it('navigates into AI submenu and sets permissions', async () => {
+    // Select [2] AI, then [3] Permissions, select [1] auto, then q (exit AI), then q (exit main)
+    const rl = createMockRl(['2', '3', '1', 'q', 'q'])
+    const result = await executeSettings(rl, {})
+
+    expect(vi.mocked(saveConfig)).toHaveBeenCalledWith(
+      expect.objectContaining({ permissions: 'auto' })
+    )
+    expect(result).toEqual({ permissions: 'auto' })
   })
 })

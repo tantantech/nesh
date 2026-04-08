@@ -1,10 +1,8 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { expandAlias } from '../../src/alias.js'
 import { classifyInput } from '../../src/classify.js'
 import { loadPluginsPhase1 } from '../../src/plugins/loader.js'
-import { createEmptyRegistry } from '../../src/plugins/registry.js'
 import { BUNDLED_PLUGINS } from '../../src/plugins/index.js'
-import { executeAliases } from '../../src/builtins.js'
 
 describe('plugin-shell integration', () => {
   it('expandAlias + classifyInput: gst expands to git status (passthrough)', () => {
@@ -16,14 +14,14 @@ describe('plugin-shell integration', () => {
     expect(action.type === 'passthrough' && action.command).toBe('git status')
   })
 
-  it('expandAlias + classifyInput: aliases does NOT get alias-expanded', () => {
+  it('expandAlias + classifyInput: aliases passes through as passthrough (no longer a builtin)', () => {
     const { registry } = loadPluginsPhase1({ enabled: ['git'] }, BUNDLED_PLUGINS)
     const expanded = expandAlias('aliases', registry)
     // 'aliases' is not a git alias so it should pass through unchanged
     expect(expanded).toBe('aliases')
     const action = classifyInput(expanded, 'a')
-    expect(action.type).toBe('builtin')
-    expect(action.type === 'builtin' && action.name).toBe('aliases')
+    expect(action.type).toBe('passthrough')
+    expect(action.type === 'passthrough' && action.command).toBe('aliases')
   })
 
   it('loadPluginsPhase1 with git enabled: resolve(gst) returns git status', () => {
@@ -36,19 +34,5 @@ describe('plugin-shell integration', () => {
     const { registry } = loadPluginsPhase1({ enabled: [] }, BUNDLED_PLUGINS)
     expect(registry.resolve('gst')).toBeUndefined()
     expect(registry.getAll().size).toBe(0)
-  })
-
-  it('executeAliases with git plugin outputs gst and git status', () => {
-    const { registry } = loadPluginsPhase1({ enabled: ['git'] }, BUNDLED_PLUGINS)
-    const writeSpy = vi.spyOn(process.stdout, 'write').mockImplementation(() => true)
-
-    executeAliases(registry)
-
-    const output = writeSpy.mock.calls.map(c => String(c[0])).join('')
-    expect(output).toContain('gst')
-    expect(output).toContain('git status')
-    expect(output).toContain('git')
-
-    writeSpy.mockRestore()
   })
 })

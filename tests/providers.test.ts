@@ -277,21 +277,19 @@ describe('classify with --model flag', () => {
     })
   })
 
-  it('classifies model as builtin', async () => {
+  it('classifies model as passthrough (now routes to settings hub)', async () => {
     const { classifyInput } = await import('../src/classify.js')
     expect(classifyInput('model')).toEqual({
-      type: 'builtin',
-      name: 'model',
-      args: '',
+      type: 'passthrough',
+      command: 'model',
     })
   })
 
-  it('classifies keys as builtin', async () => {
+  it('classifies keys as passthrough (now routes to settings hub)', async () => {
     const { classifyInput } = await import('../src/classify.js')
     expect(classifyInput('keys')).toEqual({
-      type: 'builtin',
-      name: 'keys',
-      args: '',
+      type: 'passthrough',
+      command: 'keys',
     })
   })
 })
