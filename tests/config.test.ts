@@ -321,3 +321,29 @@ describe('ensureConfigDir', () => {
     )
   })
 })
+
+describe('user_aliases config', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('round-trips user_aliases through save and load', async () => {
+    let stored = ''
+    vi.mocked(fs.mkdirSync).mockReturnValue(undefined)
+    vi.mocked(fs.writeFileSync).mockImplementation((_p, data) => {
+      stored = String(data)
+    })
+    vi.mocked(fs.readFileSync).mockImplementation(() => {
+      if (stored) return stored
+      const err = new Error('ENOENT') as NodeJS.ErrnoException
+      err.code = 'ENOENT'
+      throw err
+    })
+    const { loadConfig, saveConfig } = await loadModule()
+    const config = loadConfig()
+    const updated = { ...config, user_aliases: { gs: 'git status', ll: 'ls -la' } }
+    saveConfig(updated)
+    const reloaded = loadConfig()
+    expect(reloaded.user_aliases).toEqual({ gs: 'git status', ll: 'ls -la' })
+  })
+})

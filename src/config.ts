@@ -34,6 +34,7 @@ export interface NeshConfig {
   readonly prompt_time_format?: 'none' | '12h' | '24h'
   readonly suggestions?: SuggestionsConfig
   readonly highlighting?: HighlightingConfig
+  readonly user_aliases?: Readonly<Record<string, string>>
 }
 
 export interface SuggestionsConfig {
@@ -149,6 +150,16 @@ export function loadConfig(): NeshConfig {
         : {}),
       ...(typeof obj.highlighting === 'object' && obj.highlighting !== null
         ? { highlighting: validateHighlightingConfig(obj.highlighting as Record<string, unknown>) }
+        : {}),
+      ...(typeof obj.user_aliases === 'object' && obj.user_aliases !== null && !Array.isArray(obj.user_aliases)
+        ? (() => {
+            const aliases = obj.user_aliases as Record<string, unknown>
+            const valid: Record<string, string> = {}
+            for (const [k, v] of Object.entries(aliases)) {
+              if (typeof v === 'string') valid[k] = v
+            }
+            return Object.keys(valid).length > 0 ? { user_aliases: valid as Readonly<Record<string, string>> } : {}
+          })()
         : {}),
     }
 
