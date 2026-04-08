@@ -140,6 +140,7 @@ export async function runShell(options?: { readonly safeMode?: boolean; readonly
 
   let currentAbortController: AbortController | undefined
   let lastHistoryLine: string | undefined
+  let lastExitCode = 0
 
   const cleanup = () => {
     highlightingCleanup?.()
@@ -357,7 +358,8 @@ export async function runShell(options?: { readonly safeMode?: boolean; readonly
             break
           }
           await dispatchHook('preCommand', hookBus.preCommand, { cwd: process.cwd(), command: action.command })
-          const result = await executeCommand(action.command)
+          const result = await executeCommand(action.command, undefined, lastExitCode)
+          lastExitCode = result.exitCode
           if (result.exitCode !== 0) {
             process.stderr.write(`[exit: ${result.exitCode}]\n`)
             const lastError = {
@@ -401,6 +403,7 @@ export async function runShell(options?: { readonly safeMode?: boolean; readonly
               process.stderr.write('Could not determine a fix for this error.\n')
             }
           } else {
+            lastExitCode = 0
             state = { ...state, lastError: undefined, lastSuggestedFix: undefined }
           }
           await dispatchHook('postCommand', hookBus.postCommand, { cwd: process.cwd(), command: action.command, exitCode: result.exitCode })
@@ -410,7 +413,8 @@ export async function runShell(options?: { readonly safeMode?: boolean; readonly
         case 'ai': {
           // Handle 'a fix' command -- execute last suggested fix
           if (action.prompt === 'fix' && state.lastSuggestedFix) {
-            const fixResult = await executeCommand(state.lastSuggestedFix)
+            const fixResult = await executeCommand(state.lastSuggestedFix, undefined, lastExitCode)
+            lastExitCode = fixResult.exitCode
             if (fixResult.exitCode !== 0) {
               process.stderr.write(`[exit: ${fixResult.exitCode}]\n`)
               state = {

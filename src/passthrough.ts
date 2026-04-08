@@ -5,9 +5,13 @@ export interface CommandResult {
   readonly stderr: string
 }
 
-export function executeCommand(command: string, cwd?: string): Promise<CommandResult> {
+export function executeCommand(command: string, cwd?: string, lastExitCode?: number): Promise<CommandResult> {
   return new Promise((resolve) => {
-    const child = spawn('bash', ['-c', command], {
+    // Inject previous exit code so $? works correctly across commands
+    const wrappedCommand = lastExitCode !== undefined
+      ? `(exit ${lastExitCode}); ${command}`
+      : command
+    const child = spawn('bash', ['-c', wrappedCommand], {
       stdio: ['inherit', 'inherit', 'pipe'],
       cwd: cwd ?? process.cwd(),
       env: process.env,
