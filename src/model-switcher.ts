@@ -45,7 +45,7 @@ export async function executeModelSwitcher(
         index++
         indexToShorthand.push(shorthand)
         const isCurrent = currentModel === entry.model || currentModel === shorthand
-        const marker = isCurrent ? pc.green(' *') : '  '
+        const marker = isCurrent ? pc.green(' (current)') : ''
         process.stdout.write(`    [${index}] ${entry.displayName}${marker}\n`)
       }
     }
@@ -62,7 +62,7 @@ export async function executeModelSwitcher(
       index++
       indexToShorthand.push(shorthand)
       const isCurrent = currentModel === entry.model || currentModel === shorthand
-      const marker = isCurrent ? pc.green(' *') : '  '
+      const marker = isCurrent ? pc.green(' (current)') : ''
       process.stdout.write(`    [${index}] ${entry.displayName}${marker}\n`)
     }
     process.stdout.write('\n')
