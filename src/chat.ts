@@ -4,61 +4,20 @@ import { executeAI } from './ai.js'
 import { createRenderer, renderCostFooter } from './renderer.js'
 import { createSessionId } from './session.js'
 import { EMPTY_ACCUMULATOR, accumulate } from './cost.js'
-import { executeModelSwitcher } from './model-switcher.js'
-import { getProviderForModel } from './providers/index.js'
-import type { ShellState, UsageInfo } from './types.js'
+import type { ShellState } from './types.js'
 import type { NeshConfig } from './config.js'
-
-export const MODEL_SHORTHANDS: Readonly<Record<string, string>> = {
-  haiku: 'claude-haiku-4-5-20251001',
-  sonnet: 'claude-sonnet-4-5-20250514',
-  opus: 'claude-opus-4-6-20250414',
-}
 
 export type SlashCommandResult =
   | { readonly type: 'exit' }
   | { readonly type: 'new' }
-  | { readonly type: 'model'; readonly model: string }
-  | { readonly type: 'permissions_show' }
-  | { readonly type: 'permissions_set'; readonly mode: 'auto' | 'ask' | 'deny' }
+  | { readonly type: 'settings' }
   | { readonly type: 'unknown'; readonly input: string }
 
 export function parseSlashCommand(raw: string): SlashCommandResult {
   const input = raw.trim()
-
-  if (input === '/exit' || input === '/shell') {
-    return { type: 'exit' }
-  }
-
-  if (input === '/new') {
-    return { type: 'new' }
-  }
-
-  if (input.startsWith('/model')) {
-    const arg = input.slice('/model'.length).trim()
-    if (!arg) {
-      return { type: 'model', model: '' }  // Empty means show picker
-    }
-    // Check provider registry first, then legacy shorthands
-    const providerEntry = getProviderForModel(arg)
-    if (providerEntry) {
-      return { type: 'model', model: providerEntry.modelId }
-    }
-    const resolved = MODEL_SHORTHANDS[arg] ?? arg
-    return { type: 'model', model: resolved }
-  }
-
-  if (input.startsWith('/permissions')) {
-    const arg = input.slice('/permissions'.length).trim()
-    if (!arg) {
-      return { type: 'permissions_show' }
-    }
-    if (arg === 'auto' || arg === 'ask' || arg === 'deny') {
-      return { type: 'permissions_set', mode: arg }
-    }
-    return { type: 'unknown', input }
-  }
-
+  if (input === '/exit' || input === '/shell') return { type: 'exit' }
+  if (input === '/new') return { type: 'new' }
+  if (input === '/settings') return { type: 'settings' }
   return { type: 'unknown', input }
 }
 
@@ -71,7 +30,7 @@ export async function runChatMode(params: {
   let state = params.state
   const chatPrompt = pc.cyan('ai > ')
 
-  process.stderr.write(pc.dim('Chat mode -- type /exit to return to shell, /new for fresh context, /model <name> to switch model, /permissions <mode> to set permissions\n'))
+  process.stderr.write(pc.dim('Chat mode -- type /exit to return to shell, /new for fresh context, /settings to configure\n'))
 
   // Save shell history and swap in chat history
   const rlInternal = rl as unknown as { history: string[] }
@@ -110,32 +69,19 @@ export async function runChatMode(params: {
           continue
         }
 
-        case 'model':
-          if (cmd.model === '') {
-            // Interactive picker
-            const selected = await executeModelSwitcher(rl, state.currentModel)
-            if (selected) {
-              state = { ...state, currentModel: selected }
-            }
-          } else {
-            state = { ...state, currentModel: cmd.model }
-            const info = getProviderForModel(cmd.model)
-            const displayLabel = info?.displayName ?? cmd.model
-            process.stderr.write(pc.dim(`Model set to ${displayLabel}\n`))
-          }
+        case 'settings': {
+          const { executeSettings } = await import('./settings.js')
+          const settingsResult = await executeSettings(rl, {
+            currentModel: state.currentModel,
+            permissionMode: state.permissionMode,
+          })
+          if (settingsResult.model) state = { ...state, currentModel: settingsResult.model }
+          if (settingsResult.permissions) state = { ...state, permissionMode: settingsResult.permissions }
           continue
-
-        case 'permissions_show':
-          process.stderr.write(`Permission mode: ${state.permissionMode}\n`)
-          continue
-
-        case 'permissions_set':
-          state = { ...state, permissionMode: cmd.mode }
-          process.stderr.write(pc.dim(`Permission mode set to ${cmd.mode}\n`))
-          continue
+        }
 
         case 'unknown':
-          process.stderr.write('Unknown command. Available: /exit, /new, /model <name>, /permissions <mode>\n')
+          process.stderr.write('Unknown command. Available: /exit, /new, /settings\n')
           continue
       }
     }
