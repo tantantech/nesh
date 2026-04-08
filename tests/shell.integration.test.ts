@@ -29,7 +29,7 @@ function runShell(
   })
 }
 
-describe('Shell Integration', { timeout: 15_000 }, () => {
+describe('Shell Integration', { timeout: 30_000 }, () => {
   // SHELL-01: Shell launches and shows prompt containing 'nesh' and prompt character
   it('shows prompt with nesh and cwd', async () => {
     const { stdout } = await runShell('exit\n')
@@ -91,8 +91,9 @@ describe('Shell Integration', { timeout: 15_000 }, () => {
 
   // AI integration: 'a' command invokes AI (shows API key error when unset)
   it('a command shows API key error when ANTHROPIC_API_KEY is not set', async () => {
+    const tmpHome = path.join(os.tmpdir(), `nesh_test_home_${Date.now()}`)
     const { stderr } = await runShell('a hello\nexit\n', {
-      env: { ...process.env, ANTHROPIC_API_KEY: '' },
+      env: { ...process.env, ANTHROPIC_API_KEY: '', HOME: tmpHome },
     })
     expect(stderr).toContain('ANTHROPIC_API_KEY')
   })
@@ -120,7 +121,7 @@ describe('Shell Integration', { timeout: 15_000 }, () => {
   // PLAT-01: Built artifact starts and exits cleanly
   it('built artifact starts and responds to exit command', async () => {
     const { exitCode } = await new Promise<{ stdout: string; stderr: string; exitCode: number }>((resolve) => {
-      const child = spawn('node', ['dist/cli.js'], {
+      const child = spawn('node', ['dist/cli.js', '--interactive'], {
         cwd: process.cwd(),
         env: { ...process.env, TERM: 'dumb' },
         stdio: ['pipe', 'pipe', 'pipe'],

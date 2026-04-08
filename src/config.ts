@@ -206,7 +206,7 @@ export function resolveApiKey(config?: NeshConfig): string | undefined {
   const envKey = process.env.ANTHROPIC_API_KEY
   if (envKey) return envKey
   if (config?.api_key) return config.api_key
-  return config?.keys?.anthropic ?? undefined
+  return config?.keys?.anthropic ?? config?.keys?.claude ?? undefined
 }
 
 export function maskKey(key: string): string {
