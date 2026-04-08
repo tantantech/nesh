@@ -7,7 +7,8 @@ import { executePromptConfig, COLOR_SCHEMES } from './prompt-config.js'
 import { executeModelSwitcher } from './model-switcher.js'
 import { executeKeyManager } from './key-manager.js'
 import { loadConfig, saveConfig } from './config.js'
-import { TEMPLATES } from './templates.js'
+import { TEMPLATES, buildPromptFromTemplate } from './templates.js'
+import * as os from 'node:os'
 import type { PluginRegistry } from './plugins/registry.js'
 import type { HotReloadResult } from './plugin-reload.js'
 import { PLUGIN_CATALOG_LIST } from './plugins/index.js'
@@ -178,15 +179,18 @@ async function appearanceMenu(rl: ReadlineInterface): Promise<SettingsResult> {
 async function pickTemplate(rl: ReadlineInterface): Promise<SettingsResult> {
   const config = loadConfig()
   const currentName = config.prompt_template ?? 'minimal'
+  const cwd = process.cwd()
+  const homedir = os.homedir()
 
   process.stdout.write(`\n${pc.bold('Select Template')}\n\n`)
   for (let i = 0; i < TEMPLATES.length; i++) {
     const t = TEMPLATES[i]
     const marker = t.name === currentName ? pc.green(' (current)') : ''
     const nf = t.requiresNerdFont ? pc.dim(' [Nerd Font]') : ''
+    const preview = buildPromptFromTemplate(t, cwd, homedir, { ...config, prompt_template: t.name })
     process.stdout.write(`  [${i + 1}] ${t.label}${nf} — ${pc.dim(t.description)}${marker}\n`)
+    process.stdout.write(`      ${preview}\n\n`)
   }
-  process.stdout.write('\n')
 
   const answer = await rl.question(`Select (1-${TEMPLATES.length}) or q: `)
   const parsed = parseMenuChoice(answer, TEMPLATES.length)
@@ -202,14 +206,18 @@ async function pickTemplate(rl: ReadlineInterface): Promise<SettingsResult> {
 async function pickColorScheme(rl: ReadlineInterface): Promise<SettingsResult> {
   const config = loadConfig()
   const currentName = config.prompt_color_scheme ?? 'default'
+  const cwd = process.cwd()
+  const homedir = os.homedir()
+  const tmpl = TEMPLATES.find(t => t.name === (config.prompt_template ?? 'minimal')) ?? TEMPLATES[0]
 
   process.stdout.write(`\n${pc.bold('Select Color Scheme')}\n\n`)
   for (let i = 0; i < COLOR_SCHEMES.length; i++) {
     const s = COLOR_SCHEMES[i]
     const marker = s.name === currentName ? pc.green(' (current)') : ''
+    const preview = buildPromptFromTemplate(tmpl, cwd, homedir, { ...config, prompt_color_scheme: s.name })
     process.stdout.write(`  [${i + 1}] ${s.label} — ${pc.dim(s.description)}${marker}\n`)
+    process.stdout.write(`      ${preview}\n\n`)
   }
-  process.stdout.write('\n')
 
   const answer = await rl.question(`Select (1-${COLOR_SCHEMES.length}) or q: `)
   const parsed = parseMenuChoice(answer, COLOR_SCHEMES.length)
